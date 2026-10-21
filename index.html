@@ -150,6 +150,39 @@ main{position:relative;z-index:1;padding:8px clamp(14px,3vw,32px) 40px;min-heigh
 .shake{animation:shake .5s}
 @keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
 
+/* ---------- 모드 선택 ---------- */
+.mode-wrap{width:min(920px,100%);padding:clamp(4px,3vh,28px) 0}
+.mode-head{text-align:center;margin-bottom:20px}
+.mode-head h2{margin:0 0 4px;font-size:clamp(22px,3.4vw,28px)}
+.mode-head .who{display:inline-block;margin-bottom:8px}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.mode-card{padding:26px;display:flex;flex-direction:column;gap:12px;transition:transform .45s var(--spring),box-shadow .45s;animation:pop .7s var(--spring) both}
+.mode-card:nth-child(2){animation-delay:.1s}
+.mode-card:hover{transform:translateY(-4px)}
+.mode-card.exam{border-color:rgba(var(--p-rgb),.45)}
+.mode-card h3{margin:0;font-size:22px;font-family:var(--font-d)}
+.mode-card ul{margin:0;padding-left:18px;color:var(--text2);font-size:14px;line-height:1.7;flex:1}
+.mode-ico{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;font-size:30px;background:var(--glass-2);border:1px solid var(--glass-brd);box-shadow:0 10px 24px -14px var(--shadow)}
+.mode-card.exam .mode-ico{background:linear-gradient(135deg,var(--p),var(--p2))}
+.mode-card.off{opacity:.62}
+.mode-card .field{margin-bottom:0}
+.mode-off{margin:0;color:var(--warn)!important;font-weight:650}
+/* ---------- 연습 피드백 ---------- */
+.modal.wide{width:min(760px,100%)}
+.fb-head{text-align:center}
+.fb-head .big{font-size:46px;line-height:1;display:inline-block;animation:bob 3s ease-in-out infinite}
+.fb-head h3{font-family:var(--font-d);font-size:24px;margin:8px 0 2px}
+.fb-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+.fb-kpi{padding:14px;border-radius:16px;background:var(--input);border:1px solid var(--line);text-align:center}
+.fb-kpi small{display:block;color:var(--muted);font-weight:650;font-size:12.5px}
+.fb-kpi b{display:block;font-family:var(--font-d);font-size:30px;line-height:1.15;margin:2px 0}
+.fb-kpi span{font-size:12.5px;font-weight:650}
+.fb-kpi.good span{color:var(--ok)}.fb-kpi.mid span{color:var(--warn)}.fb-kpi.low span{color:var(--bad)}
+.fb-comp{padding:12px 14px;border-radius:14px;background:var(--input);border:1px solid var(--line);margin-bottom:8px;font-size:13.5px}
+.fb-comp h4{margin:0 0 4px;font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.fb-comp .tip{margin-top:6px;padding:8px 10px;border-radius:10px;background:rgba(var(--p-rgb),.08);color:var(--text)}
+.fb-comp .said{color:var(--muted);font-style:italic;margin-top:4px}
+.fb-comp .flag{margin-top:4px}
 /* ---------- 준비 화면 ---------- */
 .ready-card{max-width:720px}
 .ready-card h2{font-size:clamp(21px,3vw,26px);margin:0 0 4px}
@@ -415,6 +448,8 @@ audio{width:100%;height:38px;margin-top:6px}
   .nav button{white-space:nowrap}
 }
 @media (max-width:860px){
+  .mode-grid{grid-template-columns:1fr}
+  .fb-kpis{grid-template-columns:1fr}
   .stage,.stage.is-chat{grid-template-columns:1fr;gap:16px}
   .stage .chat{display:none}
   .stage.is-chat .chat{display:flex;height:auto;min-height:0;max-height:none}
@@ -439,7 +474,7 @@ audio{width:100%;height:38px;margin-top:6px}
 </style>
 </head>
 <body>
-<script type="application/json" id="boot">{"host": "external", "apiUrl": "https://script.google.com/macros/s/AKfycbxb-kODldJeOVGluexQbN2_1fj0f2f1i7U7UgRszaDlf6ThQdv17i2X-I6OKCPkEtMQ_A/exec", "builtAt": "2026-10-21 12:50:00", "version": "1.0.0"}</script>
+<script type="application/json" id="boot">{"host": "external", "apiUrl": "https://script.google.com/macros/s/AKfycbxb-kODldJeOVGluexQbN2_1fj0f2f1i7U7UgRszaDlf6ThQdv17i2X-I6OKCPkEtMQ_A/exec", "builtAt": "2026-10-21 13:50:00", "version": "1.1.0"}</script>
 <div class="bg-fx" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i><i class="b4"></i></div>
 
 <header class="topbar">
@@ -489,11 +524,33 @@ audio{width:100%;height:38px;margin-top:6px}
         <form id="fLogin" autocomplete="off" novalidate>
           <label class="field"><span>학번</span><input class="inp" id="inSid" inputmode="numeric" maxlength="12" placeholder="예: 10101" autocomplete="off"></label>
           <label class="field"><span>이름</span><input class="inp" id="inName" maxlength="20" placeholder="예: 홍길동" autocomplete="off"></label>
-          <label class="field" id="codeField"><span>시험 코드</span><input class="inp" id="inCode" maxlength="12" placeholder="선생님이 알려 준 코드" autocomplete="off"></label>
           <button class="btn btn-p btn-block" id="btnLogin" type="submit">시작하기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
         </form>
         <div class="login-foot"><button class="link" id="lnkTeacher" type="button">교사 로그인</button></div>
       </div>
+    </div>
+  </section>
+
+  <!-- 모드 선택: 모의 연습 / 실제 수행평가 -->
+  <section class="screen" id="scr-mode">
+    <div class="mode-wrap">
+      <div class="mode-head"><span class="pill acc who" id="mdClass"></span><h2><span id="mdName"></span> 학생, 반가워요! 👋</h2><p class="muted" style="margin:0">무엇을 할지 골라 주세요.</p></div>
+      <div class="mode-grid">
+        <div class="mode-card glass" id="mdPractice">
+          <div class="mode-ico">🧪</div><h3>모의 연습</h3>
+          <ul><li>실제와 똑같이 카드를 뽑고 챗봇과 대화해요.</li><li><b>기록이 저장되지 않아요.</b> 몇 번이든 연습할 수 있어요.</li><li>끝나면 <b>구성요소 · 발음 · 멈춤</b> 피드백을 보여 줘요.</li></ul>
+          <p class="mode-off hidden" id="mdPracticeOff"></p>
+          <button class="btn btn-block" id="btnPractice" type="button">🧪 연습 시작하기</button>
+        </div>
+        <div class="mode-card glass exam" id="mdExam">
+          <div class="mode-ico">📝</div><h3>실제 수행평가</h3>
+          <ul><li>결과와 녹음이 <b>선생님께 저장</b>돼요.</li><li><b>한 번만</b> 응시할 수 있어요.</li><li>재료 · 색 · 모양 · 맛 · 질감을 영어로 묘사해요.</li></ul>
+          <p class="mode-off hidden" id="mdExamOff"></p>
+          <label class="field" id="mdCodeField"><span>시험 코드</span><input class="inp" id="mdCode" maxlength="12" placeholder="선생님이 알려 준 코드" autocomplete="off"></label>
+          <button class="btn btn-p btn-block" id="btnExam" type="button">📝 수행평가 시작하기</button>
+        </div>
+      </div>
+      <div class="login-foot"><button class="link" id="btnModeBack" type="button">다른 학생이에요 · 처음으로</button></div>
     </div>
   </section>
 
@@ -520,7 +577,7 @@ audio{width:100%;height:38px;margin-top:6px}
         </ul>
       </div>
       <div class="row between">
-        <button class="btn" id="btnReadyBack" type="button">← 처음으로</button>
+        <button class="btn" id="btnReadyBack" type="button">← 뒤로</button>
         <button class="btn btn-p" id="btnToCard" type="button" disabled>카드 뽑으러 가기 →</button>
       </div>
     </div>
@@ -548,6 +605,7 @@ audio{width:100%;height:38px;margin-top:6px}
             <span class="avatar" id="botAvatar"></span>
             <div><b>Food Buddy</b><small id="chatSub">영어로 음식을 설명해 주세요</small></div>
             <span class="spacer"></span>
+            <span class="pill warn hidden" id="modePill">🧪 모의 연습</span>
             <span class="pill" id="timer" aria-label="경과 시간">00:00</span>
           </div>
           <div class="chips" id="chips"></div>
@@ -1430,10 +1488,19 @@ function resetS() {
   S = {
     token: null, sid: '', name: '', food: null, comp: 0, maxTries: CFG.maxTries, comps: COMP.map(c => ({ key: c.key, status: 'pending', tries: 0 })),
     blobs: COMP.map(() => []), files: [], audioQ: Promise.resolve(), micState: 'off', utt: null, t0: 0, timerIv: null,
-    drawing: false, finished: false, check: { mic: false, voice: false, asr: null }, meterOn: false
+    drawing: false, finished: false, check: { mic: false, voice: false, asr: null }, meterOn: false,
+    mode: '', info: null, urls: []
   };
 }
 resetS();
+/** 한 번의 응시(연습/실제)마다 초기화할 값 – 로그인·마이크 점검 결과는 유지 */
+function resetRun() {
+  (S.urls || []).forEach(u => { try { URL.revokeObjectURL(u); } catch (e) { /* 무시 */ } });
+  Object.assign(S, {
+    food: null, comp: 0, comps: COMP.map(c => ({ key: c.key, status: 'pending', tries: 0 })), blobs: COMP.map(() => []), files: [],
+    audioQ: Promise.resolve(), drawing: false, finished: false, saved: false, urls: []
+  });
+}
 
 function gotoLogin() {
   const sup = support(), notes = [];
@@ -1449,11 +1516,11 @@ function gotoLogin() {
     if (!sup.gum || !sup.rec) notes.push(['bad', '녹음을 지원하지 않는 브라우저예요', '최신 Chrome 또는 Edge를 사용해 주세요.']);
     if (!sup.secure) notes.push(['bad', '보안 연결(https)이 아니에요', 'https:// 주소로 접속해야 마이크를 쓸 수 있어요.']);
   }
-  if (!CFG.examOpen) notes.push(['warn', '지금은 시험이 닫혀 있어요', '선생님이 시험을 열면 시작할 수 있어요.']);
+  if (!CFG.examOpen && !CFG.practiceOpen) notes.push(['warn', '지금은 시험과 모의 연습이 모두 닫혀 있어요', '선생님의 안내를 기다려 주세요.']);
+  else if (!CFG.examOpen) notes.push(['info', '지금은 모의 연습만 할 수 있어요', '실제 수행평가는 선생님이 시험을 열면 시작할 수 있어요.']);
   $('#loginNotice').innerHTML = notes.map(([t, b, d]) => `<div class="notice ${t}"><div><span class="nt">${esc(b)}</span>${d}</div></div>`).join('');
-  $('#codeField').classList.toggle('hidden', !CFG.needCode || dev != null);
   $('#btnLogin').disabled = !sup.policy || !sup.sr || !sup.gum || !sup.rec || !sup.secure;
-  $('#inSid').value = ''; $('#inName').value = ''; $('#inCode').value = '';
+  $('#inSid').value = ''; $('#inName').value = '';
   show('scr-login');
   setTimeout(() => { try { $('#inSid').focus({ preventScroll: true }); } catch (e) { /* 무시 */ } }, 350);
 }
@@ -1461,20 +1528,63 @@ function gotoLogin() {
 async function studentLogin(e) {
   e.preventDefault();
   const sid = $('#inSid').value.trim(), name = $('#inName').value.trim();
-  const dev = SSn.get('deviceCode', null);
-  const code = dev != null ? dev : $('#inCode').value.trim();
   if (!/^\d{3,12}$/.test(sid)) { shake(); toast('학번을 숫자로 정확히 입력해 주세요.', 'error'); $('#inSid').focus(); return; }
   if (!name) { shake(); toast('이름을 입력해 주세요.', 'error'); $('#inName').focus(); return; }
-  if (CFG.needCode && dev == null && !code) { shake(); toast('시험 코드를 입력해 주세요.', 'error'); $('#inCode').focus(); return; }
   await busy($('#btnLogin'), async () => {
     try {
-      const r = await api('apiStudentLogin', sid, name, code, navigator.userAgent.slice(0, 180));
+      const r = await api('apiStudentLogin', sid, name, navigator.userAgent.slice(0, 180));
       resetS();
-      S.token = r.token; S.sid = r.sid; S.name = r.name;
-      if (r.resumed) toast('진행 중이던 응시를 처음부터 다시 시작해요. (뽑았던 음식은 그대로예요)');
-      gotoReady();
+      S.token = r.token; S.sid = r.sid; S.name = r.name; S.info = r;
+      gotoMode();
     } catch (err) { shake(); toast(err.message, 'error'); }
   });
+}
+
+function gotoMode() {
+  const i = S.info || {};
+  const dev = SSn.get('deviceCode', null);
+  $('#mdName').textContent = S.name;
+  $('#mdClass').textContent = i.classLabel || ('학번 ' + S.sid);
+  const pOff = !i.practiceOpen;
+  $('#mdPractice').classList.toggle('off', pOff);
+  $('#btnPractice').disabled = pOff;
+  $('#mdPracticeOff').classList.toggle('hidden', !pOff);
+  $('#mdPracticeOff').textContent = pOff ? '지금은 모의 연습이 닫혀 있어요.' : '';
+  let eMsg = '';
+  if (!i.examOpen) eMsg = '지금은 시험이 열려 있지 않아요. 선생님의 안내를 기다려 주세요.';
+  else if (i.examDone) eMsg = '이미 실제 수행평가를 마쳤어요. 수고했어요!';
+  else if (i.examInProgress) eMsg = '진행 중이던 응시가 있어요. 시작하면 같은 음식으로 처음부터 다시 해요.';
+  const eOff = !i.examOpen || i.examDone;
+  $('#mdExam').classList.toggle('off', eOff);
+  $('#btnExam').disabled = eOff;
+  $('#mdExamOff').classList.toggle('hidden', !eMsg);
+  $('#mdExamOff').textContent = eMsg;
+  $('#mdCodeField').classList.toggle('hidden', eOff || !i.needCode || dev != null);
+  $('#mdCode').value = '';
+  show('scr-mode');
+}
+async function chooseMode(mode, btn) {
+  const dev = SSn.get('deviceCode', null);
+  const code = dev != null ? dev : $('#mdCode').value.trim();
+  if (mode === 'exam' && S.info && S.info.needCode && dev == null && !code) { toast('시험 코드를 입력해 주세요.', 'error'); $('#mdCode').focus(); return false; }
+  let ok = false;
+  const run = async () => {
+    try {
+      const r = await api('apiChooseMode', S.token, mode, code);
+      resetRun();
+      S.mode = r.mode;
+      if (r.resumed) toast('진행 중이던 응시를 처음부터 다시 시작해요. (뽑았던 음식은 그대로예요)');
+      ok = true;
+    } catch (e) {
+      if (e.session) return studentErr(e, true);
+      toast(e.message, 'error', 6000);
+      if (btn) shake(btn.closest('.mode-card') || btn);
+    }
+  };
+  if (btn) await busy(btn, run); else await run();
+  if (!ok) return false;
+  if (S.check.mic && S.check.voice && Mic.stream && Mic.stream.active) gotoStage(); else gotoReady();
+  return true;
 }
 
 function setCk(id, st) { const el = $('#' + id); el.className = st || ''; }
@@ -1560,7 +1670,10 @@ function gotoStage() {
   $('#msgs').innerHTML = '';
   $('#chips').innerHTML = '';
   $('#live').textContent = '';
-  $('#stageHint').innerHTML = '카드를 터치해서 오늘의 음식을 뽑아 보세요!';
+  const pr = S.mode === 'practice';
+  $('#stageHint').innerHTML = pr ? '<span class="pill warn">🧪 모의 연습</span> 카드를 터치해서 연습할 음식을 뽑아 보세요!' : '카드를 터치해서 오늘의 음식을 뽑아 보세요!';
+  $('#modePill').classList.toggle('hidden', !pr);
+  $('#chatSub').textContent = pr ? '모의 연습이에요 · 기록되지 않아요' : '영어로 음식을 설명해 주세요';
   $('#timer').textContent = '00:00';
   $('#botAvatar').innerHTML = FOODART.BOT;
   setMic('off', '');
@@ -1764,7 +1877,7 @@ async function onMic() {
   typing.remove();
   updateChips(r.comps, r.nextComp, r.finishedComp ? r.compIndex : -1);
   await botSay(r.messages, r);
-  if (r.finishedComp) queueAudio(r.compIndex);
+  if (r.finishedComp && S.mode === 'exam') queueAudio(r.compIndex);
   if (r.done) return finishAll();
   S.comp = r.nextComp;
   setMic('idle');
@@ -1786,6 +1899,7 @@ async function processAudio(ci) {
 function updUpCount() { const el = $('#fpUp'); if (el) el.textContent = S.files.filter(Boolean).length + ' / 5'; }
 
 async function finishAll() {
+  if (S.mode === 'practice') return practiceFeedback();
   S.finished = true;
   setMic('off', '대화가 끝났어요 👏');
   stopTimer();
@@ -1820,6 +1934,72 @@ async function saveFinal() {
     toast('저장하지 못했어요: ' + e.message + ' [다시 저장]을 눌러 주세요. 계속 안 되면 선생님께 알려 주세요.', 'error', 8000);
   }
 }
+/* ----- 모의 연습 피드백 (저장하지 않음) ----- */
+const FB_TIP = {
+  ingredients: n => `재료를 <b>${n}가지 이상</b> 말해 보세요. 예) <i>It is made with ___ and ___.</i> / <i>It has ___ in it.</i>`,
+  color: n => `보이는 색을 말해 보세요. 예) <i>It is ___ and ___.</i> / <i>The ___ is ___.</i>`,
+  shape: n => `모양을 말해 보세요. 예) <i>It is ___.</i> / <i>It looks like a ___.</i>`,
+  taste: n => `맛을 말해 보세요. 예) <i>It tastes ___.</i> / <i>It is a little ___.</i>`,
+  texture: n => `먹을 때의 느낌(질감)을 말해 보세요. 예) <i>It feels ___.</i> / <i>It is ___ and ___.</i>`
+};
+async function practiceFeedback() {
+  S.finished = true;
+  setMic('off', '연습이 끝났어요 👏');
+  stopTimer();
+  let fb;
+  try { fb = (await apiRetry('apiFinish', [S.token, [], {}], 3)).feedback; } catch (e) { return studentErr(e); }
+  S.saved = true;
+  confetti(.8);
+  showFeedback(fb);
+}
+function fbLevel(kind, v) {
+  if (kind === 'sat') return v >= 5 ? ['good', '모두 설명했어요! 👍'] : v >= 3 ? ['mid', '조금만 더! 빠진 요소를 확인해요'] : ['low', '빠진 요소를 연습해 봐요'];
+  if (kind === 'pron') return v === 0 ? ['good', '또렷하게 잘 들렸어요'] : v <= 3 ? ['mid', '아래 표시된 말을 또박또박 연습해요'] : ['low', '천천히, 또박또박 말해 봐요'];
+  return v === 0 ? ['good', '막힘 없이 말했어요'] : v <= 2 ? ['mid', '조금 멈췄어요'] : ['low', '멈춤이 많았어요'];
+}
+function flagText(f) {
+  const m = /^(.+)→(.+)\?$/.exec(f);
+  if (m) return `<b>${esc(m[1])}</b>(으)로 들렸어요 → <b>${esc(m[2])}</b>라고 말하려 했나요?`;
+  if (/^낮은 인식신뢰/.test(f)) return '이 문장은 또렷하게 들리지 않았어요: ' + esc(f.replace(/^낮은 인식신뢰\([0-9.]+\):\s*/, ''));
+  return esc(f);
+}
+function showFeedback(fb) {
+  const k = (cls, label, val, sub) => `<div class="fb-kpi ${cls}"><small>${label}</small><b>${val}</b><span>${sub}</span></div>`;
+  const [c1, t1] = fbLevel('sat', fb.satisfied), [c2, t2] = fbLevel('pron', fb.flagsN), [c3, t3] = fbLevel('pause', fb.pauses);
+  const comps = fb.comps.map((c, i) => {
+    const ok = c.status === 'done';
+    const plays = (S.blobs[i] || []).map((b, n) => {
+      const u = URL.createObjectURL(b); S.urls.push(u);
+      return `<button class="btn btn-xs" type="button" data-play="${u}">${UI.play} ${n + 1}차 내 목소리</button>`;
+    }).join('');
+    return `<div class="fb-comp"><h4>${ok ? '<span class="pill ok">✓ 충족</span>' : '<span class="pill bad">✕ 미충족</span>'} ${c.ko} <span class="muted small">${COMP[i].en}</span>
+        <span class="muted small">· 시도 ${c.tries}회${c.pauses ? ' · 멈춤 ' + c.pauses + '회' : ''}</span></h4>
+      <div>${c.found.length ? '인정된 표현: <b>' + c.found.map(esc).join(', ') + '</b>' : '<span class="muted">인정된 표현이 없었어요.</span>'}</div>
+      ${c.said.filter(Boolean).length ? `<div class="said">내가 한 말: ${c.said.filter(Boolean).map(t => '“' + esc(t) + '”').join(' / ')}</div>` : ''}
+      ${c.flags.map(f => `<div class="flag">🔎 ${flagText(f)}</div>`).join('')}
+      ${ok ? '' : `<div class="tip">💡 ${FB_TIP[c.key](c.need)}</div>`}
+      ${plays ? `<div class="row" style="gap:6px;margin-top:8px">${plays}</div>` : ''}</div>`;
+  }).join('');
+  const m = openModal(`<div class="fb-head"><div class="big">📋</div><h3>모의 연습 피드백</h3><p class="muted" style="margin:0">${esc(fb.food ? fb.food.name + ' · ' + fb.food.ko : '')} · 이 결과는 어디에도 저장되지 않아요</p></div>
+    <div class="fb-kpis">${k(c1, '구성요소 충족', fb.satisfied + '/5', t1)}${k(c2, '발음 확인 필요', fb.flagsN + '건', t2)}${k(c3, '멈춤(' + fb.pauseSec + '초 이상)', fb.pauses + '회', t3)}</div>
+    ${fb.pauses ? `<div class="notice info" style="margin-bottom:10px"><div>💬 말이 막힐 때는 <i>Well…</i>, <i>Let me see…</i>, <i>Um, it's like…</i> 처럼 이어 가면 ${fb.pauseSec}초 넘게 멈추는 것을 줄일 수 있어요.</div></div>` : ''}
+    ${comps}
+    <p class="muted small" style="margin:8px 0 0">발음 확인은 음성 인식 결과를 바탕으로 한 참고용이에요. ‘내 목소리’ 버튼으로 직접 들어 보세요. (녹음은 이 기기에만 잠시 있고 저장되지 않아요)</p>
+    <div class="acts"><button class="btn" data-a="home" type="button">처음으로</button><button class="btn" data-a="exam" type="button">📝 실제 수행평가 하러 가기</button><button class="btn btn-p" data-a="again" type="button">🔁 다시 연습하기</button></div>`);
+  m.classList.add('wide');
+  const player = document.createElement('audio');
+  m.addEventListener('click', async e => {
+    const pb = e.target.closest('[data-play]');
+    if (pb) { player.src = pb.dataset.play; player.play().catch(() => {}); return; }
+    const a = e.target.closest('[data-a]');
+    if (!a) return;
+    player.pause();
+    if (a.dataset.a === 'home') return goHome();
+    if (a.dataset.a === 'exam') { closeModal(); resetRun(); return gotoMode(); }
+    if (a.dataset.a === 'again') { a.disabled = true; closeModal(); const ok = await chooseMode('practice'); if (!ok) gotoMode(); }
+  });
+}
+
 function goHome() {
   closeModal();
   if (S.token) api('apiStudentExit', S.token).catch(() => {});
@@ -1827,6 +2007,7 @@ function goHome() {
   if (S.utt) S.utt.stop('abort');
   stopTimer(); stopMeter();
   Mic.release();
+  resetRun();
   resetS();
   refreshCfg();
   gotoLogin();
@@ -1842,7 +2023,9 @@ async function refreshCfg() { try { CFG = Object.assign(CFG, await api('apiPubli
 /* =====================================================================
  *  7. 교사 대시보드
  * ===================================================================== */
-const T = { token: null, me: null, dash: null, results: null, tab: 'live', liveIv: null, autoLive: true, filter: { q: '', food: '', st: '' } };
+const T = { token: null, me: null, dash: null, results: null, tab: 'live', liveIv: null, autoLive: true, filter: { q: '', food: '', st: '', cls: '' }, statsCls: '' };
+const clsOrder = c => { const m = /^(\d+)반$/.exec(c || ''); return m ? Number(m[1]) : 999; };
+const classList = () => Array.from(new Set((T.results || []).map(r => r.cls).filter(Boolean))).sort((a, b) => clsOrder(a) - clsOrder(b));
 const TABS = [['live', '현황', UI.live], ['results', '결과·채점', UI.results], ['stats', '통계', UI.stats], ['roster', '학생 명단', UI.roster],
   ['settings', '설정', UI.settings], ['users', '사용자 관리', UI.users, true], ['account', '내 계정', UI.account]];
 
@@ -1940,7 +2123,8 @@ function renderLive() {
       <label class="switch" style="margin-bottom:14px"><input type="checkbox" id="lvOpen" ${s.examOpen ? 'checked' : ''}><i></i>시험 열기</label>
       <label class="field"><span>시험 코드 <small>(비우면 코드 없이 입장)</small></span><div class="row"><input class="inp grow" id="lvCode" value="${esc(s.examCode)}" maxlength="12" placeholder="예: 3825"><button class="btn btn-sm" id="lvGen" type="button">🎲 새 코드</button></div></label>
       <label class="switch" style="margin-bottom:10px"><input type="checkbox" id="lvRoster" ${s.requireRoster ? 'checked' : ''}><i></i>명단에 있는 학생만 입장 (명단 ${T.dash.rosterCount}명)</label>
-      <label class="switch" style="margin-bottom:16px"><input type="checkbox" id="lvRetake" ${s.allowRetake ? 'checked' : ''}><i></i>응시를 마친 학생도 다시 응시 허용</label>
+      <label class="switch" style="margin-bottom:10px"><input type="checkbox" id="lvRetake" ${s.allowRetake ? 'checked' : ''}><i></i>응시를 마친 학생도 다시 응시 허용</label>
+      <label class="switch" style="margin-bottom:16px"><input type="checkbox" id="lvPractice" ${s.practiceOpen ? 'checked' : ''}><i></i>🧪 모의 연습 열기 (시험이 닫혀 있어도 연습 가능 · 기록 저장 안 함)</label>
       <div class="row end"><button class="btn btn-p" id="lvSave" type="button">저장</button></div>
     </div>
     <div class="panel glass">
@@ -1961,7 +2145,7 @@ function renderLive() {
   </div>`;
   drawLiveTable(L);
   $('#lvGen').onclick = () => { $('#lvCode').value = String(Math.floor(1000 + Math.random() * 9000)); };
-  $('#lvSave').onclick = () => saveSettings({ examOpen: $('#lvOpen').checked, examCode: $('#lvCode').value, requireRoster: $('#lvRoster').checked, allowRetake: $('#lvRetake').checked }, $('#lvSave')).then(ok => { if (ok) renderLive(); });
+  $('#lvSave').onclick = () => saveSettings({ examOpen: $('#lvOpen').checked, examCode: $('#lvCode').value, requireRoster: $('#lvRoster').checked, allowRetake: $('#lvRetake').checked, practiceOpen: $('#lvPractice').checked }, $('#lvSave')).then(ok => { if (ok) renderLive(); });
   $('#lvPageSave').onclick = () => saveSettings({ studentPageUrl: $('#lvPage').value }, $('#lvPageSave')).then(ok => { if (ok) renderLive(); });
   $('#lvDl').onclick = e => {
     const url = $('#lvApi').value.trim();
@@ -1979,8 +2163,8 @@ function renderLive() {
 }
 function setLiveTimer() { clearInterval(T.liveIv); if (T.autoLive && T.tab === 'live') T.liveIv = setInterval(() => { if (!document.hidden) refreshLive(); }, 15000); }
 function drawLiveTable(L) {
-  $('#liveTable').innerHTML = L.inProgress.length ? `<div class="tbl-wrap" style="margin-top:12px"><table class="tbl"><thead><tr><th>학번</th><th>이름</th><th>음식</th><th>진행</th><th>시작</th><th></th></tr></thead><tbody>${
-    L.inProgress.map(x => `<tr><td>${esc(x.sid)}</td><td>${esc(x.name)}</td><td>${esc(x.food)}</td><td>${x.progress == null
+  $('#liveTable').innerHTML = L.inProgress.length ? `<div class="tbl-wrap" style="margin-top:12px"><table class="tbl"><thead><tr><th>반</th><th>학번</th><th>이름</th><th>음식</th><th>진행</th><th>시작</th><th></th></tr></thead><tbody>${
+    L.inProgress.map(x => `<tr><td>${esc(x.cls || '-')}</td><td>${esc(x.sid)}</td><td>${esc(x.name)}</td><td>${esc(x.food)}</td><td>${x.progress == null
       ? '<span class="muted small">대기 / 연결 끊김</span>'
       : `<span class="prog"><i style="width:${Math.min(100, x.progress / 5 * 100)}%"></i></span> <span class="small">${Math.min(5, x.progress)}/5</span>`}</td><td class="small muted">${esc(String(x.startedAt).slice(5, 16))}</td><td><button class="btn btn-xs" type="button" data-reset="${esc(x.id)}" data-name="${esc(x.sid + ' ' + x.name)}">초기화</button></td></tr>`).join('')
   }</tbody></table></div>` : '<div class="empty">지금 응시 중인 학생이 없어요.</div>';
@@ -2076,6 +2260,7 @@ async function renderResults(force) {
     <div class="row" style="margin:14px 0">
       <input class="inp inp-sm grow" id="rsQ" placeholder="학번 · 이름 검색" value="${esc(T.filter.q)}" style="min-width:160px">
       <select class="inp inp-sm" id="rsFood" style="width:auto"><option value="">모든 음식</option>${foods}</select>
+      <select class="inp inp-sm" id="rsCls" style="width:auto"><option value="">모든 반</option>${classList().map(c => `<option ${T.filter.cls === c ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select>
       <select class="inp inp-sm" id="rsSt" style="width:auto"><option value="">모든 상태</option><option ${T.filter.st === '가채점' ? 'selected' : ''}>가채점</option><option ${T.filter.st === '확정' ? 'selected' : ''}>확정</option></select>
     </div>
     <div id="rsTable"></div></div>`;
@@ -2085,16 +2270,18 @@ async function renderResults(force) {
   $('#rsQ').oninput = e => { T.filter.q = e.target.value; drawResults(); };
   $('#rsFood').onchange = e => { T.filter.food = e.target.value; drawResults(); };
   $('#rsSt').onchange = e => { T.filter.st = e.target.value; drawResults(); };
+  $('#rsCls').onchange = e => { T.filter.cls = e.target.value; drawResults(); };
 }
 function filteredResults() {
   const q = T.filter.q.trim().toLowerCase();
   return (T.results || []).filter(r => (!q || r.sid.indexOf(q) >= 0 || r.name.toLowerCase().indexOf(q) >= 0) &&
-    (!T.filter.food || r.food === T.filter.food) && (!T.filter.st || r.status === T.filter.st));
+    (!T.filter.food || r.food === T.filter.food) && (!T.filter.st || r.status === T.filter.st) && (!T.filter.cls || r.cls === T.filter.cls))
+    .sort((a, b) => clsOrder(a.cls) - clsOrder(b.cls) || String(a.sid).localeCompare(String(b.sid)));
 }
 function drawResults() {
   const rows = filteredResults();
-  $('#rsTable').innerHTML = rows.length ? `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>학번</th><th>이름</th><th>음식</th><th>구성요소 충족</th><th class="num">발음 의심</th><th class="num">Pause</th><th class="num">총점</th><th>상태</th><th>제출</th></tr></thead><tbody>${
-    rows.map(r => `<tr class="click" data-id="${esc(r.id)}" tabindex="0"><td>${esc(r.sid)}</td><td>${esc(r.name)}</td><td>${esc(r.food)}</td>
+  $('#rsTable').innerHTML = rows.length ? `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>반</th><th>학번</th><th>이름</th><th>음식</th><th>구성요소 충족</th><th class="num">발음 의심</th><th class="num">Pause</th><th class="num">총점</th><th>상태</th><th>제출</th></tr></thead><tbody>${
+    rows.map(r => `<tr class="click" data-id="${esc(r.id)}" tabindex="0"><td>${esc(r.cls || '-')}</td><td>${esc(r.sid)}</td><td>${esc(r.name)}</td><td>${esc(r.food)}</td>
       <td><span class="ox">${r.comps.map((c, i) => `<i class="${c ? 'o' : ''}" title="${COMP[i].ko} ${c ? '충족' : '미충족'}">${COMP[i].ko.slice(0, 1)}</i>`).join('')}</span> <span class="small">${esc(r.satisfied)}</span></td>
       <td class="num">${r.flagsN}</td><td class="num">${r.pauses}</td><td class="num"><b>${r.total == null ? '-' : r.total}</b></td>
       <td>${r.status === '확정' ? '<span class="pill ok">확정</span>' : '<span class="pill warn">가채점</span>'}</td><td class="small muted">${esc(String(r.submittedAt).slice(5, 16))}</td></tr>`).join('')
@@ -2107,9 +2294,9 @@ function drawResults() {
 function csvCell(v) { const s = String(v == null ? '' : v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
 function exportCsv() {
   const rows = filteredResults();
-  const head = ['학번', '이름', '음식', '구성요소충족', '재료', '색', '모양', '맛', '질감', '발음의심', 'Pause', '요구사항', '발음', '유창성', '총점', '채점상태', '제출일시', '교사 메모'];
+  const head = ['반', '학번', '이름', '음식', '구성요소충족', '재료', '색', '모양', '맛', '질감', '발음의심', 'Pause', '요구사항', '발음', '유창성', '총점', '채점상태', '제출일시', '교사 메모'];
   const pickS = (t, r) => t == null ? r : t;
-  const lines = [head].concat(rows.map(r => [r.sid, r.name, r.food, r.satisfied].concat(r.comps.map(c => c ? 'O' : 'X'))
+  const lines = [head].concat(rows.map(r => [r.cls, r.sid, r.name, r.food, r.satisfied].concat(r.comps.map(c => c ? 'O' : 'X'))
     .concat([r.flagsN, r.pauses, pickS(r.teacher.req, r.ref.req), pickS(r.teacher.pron, r.ref.pron), pickS(r.teacher.flu, r.ref.flu), r.total, r.status, r.submittedAt, r.memo])));
   const d = new Date();
   download(`음식묘사_수행평가_결과_${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}.csv`, '﻿' + lines.map(l => l.map(csvCell).join(',')).join('\r\n'), 'text/csv;charset=utf-8');
@@ -2207,9 +2394,13 @@ function barRows(items, fmt) {
 async function renderStats() {
   const el = $('#tab-stats');
   if (!T.results) { el.innerHTML = skel(300); try { await loadResults(true); } catch (e) { return handleTErr(e); } }
-  const R = T.results, n = R.length;
+  const cls = classList();
+  if (T.statsCls && cls.indexOf(T.statsCls) < 0) T.statsCls = '';
+  const R = T.results.filter(r => !T.statsCls || r.cls === T.statsCls), n = R.length;
+  const clsSel = `<div class="row" style="justify-content:flex-end"><label class="small muted">반 선택</label><select class="inp inp-sm" id="stsCls" style="width:auto"><option value="">전체 (${T.results.length}명)</option>${cls.map(c => `<option ${T.statsCls === c ? 'selected' : ''}>${esc(c)}</option>`).join('')}</select></div>`;
+  const bindCls = () => { const x = $('#stsCls'); if (x) x.onchange = e => { T.statsCls = e.target.value; renderStats(); }; };
   const avg = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0;
-  if (!n) { el.innerHTML = '<div class="panel glass"><h3>통계</h3><div class="empty">제출된 결과가 생기면 통계를 보여 드려요.</div></div>'; return; }
+  if (!n) { el.innerHTML = clsSel + '<div class="panel glass"><h3>통계</h3><div class="empty">제출된 결과가 생기면 통계를 보여 드려요.</div></div>'; bindCls(); return; }
   const satAvg = avg(R.map(r => r.comps.filter(Boolean).length));
   const pAvg = avg(R.map(r => r.pauses));
   const tAvg = avg(R.filter(r => r.total != null).map(r => r.total));
@@ -2222,7 +2413,7 @@ async function renderStats() {
   const flagCount = {};
   R.forEach(r => { (String(r.pron).match(/[a-z']+→[a-z' ]+\?/g) || []).forEach(f => { flagCount[f] = (flagCount[f] || 0) + 1; }); });
   const topFlags = Object.keys(flagCount).sort((a, b) => flagCount[b] - flagCount[a]).slice(0, 12);
-  el.innerHTML = `<div class="kpis">
+  el.innerHTML = clsSel + `<div class="kpis">
       <div class="kpi glass"><small>응시 완료</small><b>${n}</b><span>명</span></div>
       <div class="kpi glass"><small>평균 구성요소 충족</small><b>${satAvg.toFixed(1)}</b><span>/ 5</span></div>
       <div class="kpi glass"><small>평균 Pause</small><b>${pAvg.toFixed(1)}</b><span>회</span></div>
@@ -2237,6 +2428,7 @@ async function renderStats() {
     </div>
     <div class="panel glass"><h3>자주 나온 발음 의심 단어</h3><p class="muted">‘인식된 단어 → 비슷한 정답 어휘’ 형태예요. 수업 피드백에 활용해 보세요.</p>
       ${topFlags.length ? `<div class="row">${topFlags.map(f => `<span class="pill warn">${esc(f)} ×${flagCount[f]}</span>`).join('')}</div>` : '<div class="empty">발음 의심 단어가 없어요.</div>'}</div>`;
+  bindCls();
 }
 
 /* ----- 학생 명단 ----- */
@@ -2292,6 +2484,8 @@ function renderSettings() {
       ${sw('stLocal', '가능하면 기기 안에서 음성 인식 (Chrome 최신, 개인정보 보호에 유리)', s.preferOnDevice)}
       <p class="muted small" style="margin:0">기기 내 인식을 지원하지 않는 브라우저는 자동으로 기본 인식을 사용해요.</p></div>
   </div>
+  <div class="panel glass"><h3>결과 저장 방식</h3><p class="muted">반별로 시트를 나눠 저장해요. 학번 5자리(학년1+반2+번호2, 예: 10315 → 3반) 또는 4자리(예: 1315 → 3반)로 반을 구분하고, 알 수 없으면 ‘기타’ 시트에 저장해요.</p>
+    ${sw('stClass', '반별 시트(1반, 2반, …)로 나눠 저장하기 (끄면 ‘Results’ 한 시트)', s.classSplit)}</div>
   <div class="panel glass"><div class="row between"><div><h3>데이터</h3><p class="muted" style="margin:0">모든 기록은 선생님 구글 드라이브에만 저장돼요.</p></div>
     <div class="row"><a class="btn btn-sm" href="${esc(T.dash.spreadsheetUrl)}" target="_blank" rel="noopener">${UI.external} 스프레드시트</a><a class="btn btn-sm" href="${esc(T.dash.folderUrl)}" target="_blank" rel="noopener">${UI.external} 녹음 폴더</a>
     <button class="btn btn-sm" id="stKw" type="button">키워드 기본값 복원</button><button class="btn btn-sm" id="stBackup" type="button" data-busy="백업 중…">시트 백업 만들기</button><button class="btn btn-p" id="stSave" type="button">설정 저장</button></div></div></div>`;
@@ -2304,7 +2498,7 @@ function renderSettings() {
       pauseSec: num('stPause'), autoStopSec: num('stAuto'), noSpeechSec: num('stNoSpeech'), maxUtterSec: num('stMax'), silenceDb: num('stDb'),
       countLeadingSilence: $('#stLead').checked, ttsLang: $('#stLang').value, ttsRate: num('stRate'), autoRevealSec: num('stReveal'),
       defaultMode: $('#stMode').value, defaultAccent: $('#stAccent').value, showTranscript: $('#stTrans').checked,
-      fuzzyFlag: $('#stFuzzy').checked, lowConfidence: num('stConf'), preferOnDevice: $('#stLocal').checked
+      fuzzyFlag: $('#stFuzzy').checked, lowConfidence: num('stConf'), preferOnDevice: $('#stLocal').checked, classSplit: $('#stClass').checked
     };
     COMP.forEach(c => { patch.minKeywords[c.key] = num('mk_' + c.key); });
     saveSettings(patch, $('#stSave')).then(ok => { if (ok) renderSettings(); });
@@ -2405,7 +2599,14 @@ function bind() {
   $('#fTSignup').addEventListener('submit', teacherSignup);
   $('#btnMicTest').onclick = micTest;
   $('#btnSpeakerTest').onclick = speakerTest;
-  $('#btnReadyBack').onclick = goHome;
+  $('#btnReadyBack').onclick = () => { stopMeter(); gotoMode(); };
+  $('#btnModeBack').onclick = goHome;
+  $('#btnPractice').onclick = () => chooseMode('practice', $('#btnPractice'));
+  $('#btnExam').onclick = async () => {
+    if (!await ask('실제 수행평가를 시작할까요?', '결과와 녹음이 선생님께 저장되고, <b>한 번만</b> 응시할 수 있어요.<br>준비가 됐으면 시작을 눌러 주세요.', '시작')) return;
+    chooseMode('exam', $('#btnExam'));
+  };
+  $('#mdCode').addEventListener('keydown', e => { if (e.key === 'Enter') $('#btnExam').click(); });
   $('#btnToCard').onclick = gotoStage;
   $('#flip').onclick = drawCard;
   $('#flip').onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); drawCard(); } };
