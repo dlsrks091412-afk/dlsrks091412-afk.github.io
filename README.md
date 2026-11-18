@@ -109,6 +109,22 @@ GitHub Pages는 **정적 호스팅**이라 서버에서 접근을 막을 수 없
 
 `office.html` 에서 볼 수 있는 흐름:
 
+에이전트들은 셔츠를 입은 **강아지 직원**으로 나와요. 대표 자리의 "나"는 사람 캐릭터입니다.
+
+| 견종 키 (`breed`) | 견종 | 특징 |
+|---|---|---|
+| `pomeranian` | 포메라니안 | 주황빛 솜털, 풍성한 목털 |
+| `samoyed` | 사모예드 | 새하얀 솜털, 웃는 얼굴 |
+| `shiba` | 시바견 | 하얀 볼, 말린 꼬리 |
+| `corgi` | 웰시코기 | 큰 귀, 짧은 다리, 동그란 꼬리 |
+| `maltese` | 말티즈 | 긴 귀, 분홍 리본 |
+| `poodle` | 푸들 | 곱슬곱슬 갈색 털 |
+| `beagle` | 비글 | 진갈색 늘어진 귀, 흰 줄무늬 |
+| `husky` | 허스키 | 회색 털, 흰 얼굴 무늬 |
+| `golden` | 골든 리트리버 | 금빛 털, 늘어진 귀 |
+
+견종을 정하지 않으면 에이전트 id에 따라 자동으로 골라지고, 같은 에이전트는 항상 같은 견종으로 나와요. 걸어 다닐 때는 바닥에 발자국이 남았다가 사라지고, 기분이 좋으면 꼬리를 더 빨리 흔들어요.
+
 1. **출근** — 42층 엘리베이터 문이 열리고 에이전트가 "출근했습니다~" 하며 걸어 나옴
 2. **착석 & 업무** — 자기 부서(지금은 **기록부**) 빈 자리에 앉아 타이핑. 스탠드가 켜지고 머그컵에서 김이 남. 문서가 완성될 때마다 `+1`이 떠오르고 책상 위 서류가 쌓임. 진행률 바, 가끔 "집중 모드"(반짝이 효과)
 3. **결재 요청** — 결재 파일(노란 폴더)을 들고 **대표실 내 자리 앞**으로 걸어옴 → 도착하면 결재 서류 창이 자동으로 열림
@@ -158,7 +174,7 @@ window.OFFICE_CONFIG = {
 **② 자바스크립트 API** — 브라우저 콘솔이나 다른 스크립트에서
 
 ```js
-Office.checkIn({ id: 'writer-1', name: '기록이', dept: 'records', task: '회의록 정리' });
+Office.checkIn({ id: 'writer-1', name: '포미', breed: 'pomeranian', dept: 'records', task: '회의록 정리' });
 Office.progress('writer-1', { percent: 60, docs: 3, task: '요약본 작성' });
 Office.requestApproval('writer-1', { title: '보고서 배포', detail: '노션에 올려도 될까요?' })
       .then(r => console.log(r.decision, r.comment));   // 'approved' | 'rejected'
@@ -172,7 +188,7 @@ Office.onDecision(r => console.log('결재 결과', r));
 
 | type | 필드 | 동작 |
 |---|---|---|
-| `checkin` | `agentId`, `name`, `dept`(`records`), `task` | 출근해서 부서 자리로 이동 |
+| `checkin` | `agentId`, `name`, `dept`(`records`), `task`, `breed`(선택, 위 견종 키) | 출근해서 부서 자리로 이동 |
 | `progress` | `agentId`, `percent`(0~100), `docs`(누적 문서 수), `task` | 진행률/업무 갱신 (25% 이상 오르면 불꽃) |
 | `approval` | `agentId`, `approvalId`, `title`, `detail` | 결재 파일 들고 내 자리로 |
 | `checkout` | `agentId` | 하던 일(결재 등) 마치고 퇴근 |

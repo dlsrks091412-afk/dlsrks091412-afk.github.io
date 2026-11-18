@@ -1,6 +1,6 @@
 {
   "events": [
-    { "eventId": "e1", "type": "checkin",  "agentId": "writer-1", "name": "기록이", "dept": "records", "task": "주간 회의록 정리" },
+    { "eventId": "e1", "type": "checkin",  "agentId": "writer-1", "name": "포미", "breed": "pomeranian", "dept": "records", "task": "주간 회의록 정리" },
     { "eventId": "e2", "type": "progress", "agentId": "writer-1", "percent": 40, "delayMs": 8000 },
     { "eventId": "e3", "type": "approval", "agentId": "writer-1", "approvalId": "ap-001",
       "title": "주간 보고서 배포", "detail": "회의 3건 요약본입니다.\n노션에 게시해도 될까요?", "delayMs": 14000 },

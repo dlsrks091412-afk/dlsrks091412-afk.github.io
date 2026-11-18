@@ -75,7 +75,7 @@
       sign: { x: 1.9, y: 5.3 },
       neon: '#7ce7c8',
       chair: '#9fc9b0',
-      lines: ['문서 정리 중…', '오탈자 꼼꼼히 확인 중', '목차를 다듬고 있어요', '표 모양 맞추는 중', '요약본 쓰는 중', '참고자료 읽는 중'],
+      lines: ['문서 정리 중…', '오탈자 꼼꼼히 확인 중', '목차를 다듬고 있어요', '표 모양 맞추는 중', '요약본 쓰는 중', '킁킁, 참고자료 찾는 중', '꼬리 살랑~ 거의 다 했어요'],
       unit: '문서'
     }
   };
@@ -1051,6 +1051,244 @@
   }
 
   /* ================================================================
+   * 6-1. 강아지 직원들
+   * ================================================================
+   * 에이전트는 셔츠를 입은 강아지로 그립니다. 견종마다 털색·귀·꼬리·무늬가 달라요.
+   * checkIn({ breed: 'samoyed' }) 처럼 견종을 정할 수 있고, 안 정하면 id에 따라 자동으로 골라집니다.
+   */
+  var BREEDS = {
+    pomeranian: { name: '포메라니안', fur: '#f2a65a', light: '#fcdcae', ear: 'point', fluffy: true, ruff: true, tail: 'plume' },
+    samoyed: { name: '사모예드', fur: '#fbf8f2', light: '#ffffff', edge: '#e6ddd0', ear: 'point', fluffy: true, ruff: true, tail: 'plume' },
+    shiba: { name: '시바견', fur: '#e59a5c', light: '#fdf0de', ear: 'point', cheeks: true, tail: 'curl' },
+    corgi: { name: '웰시코기', fur: '#eba15d', light: '#fff6ea', ear: 'big', blaze: true, tail: 'stub', shortLegs: true },
+    maltese: { name: '말티즈', fur: '#fffcf6', light: '#ffffff', edge: '#ece3d6', ear: 'longflop', tail: 'plume', bow: '#f7a8c2' },
+    poodle: { name: '푸들', fur: '#b8794e', light: '#d39c70', ear: 'curlflop', curly: true, tail: 'pom' },
+    beagle: { name: '비글', fur: '#cf9150', light: '#fffaf2', earCol: '#7a5038', ear: 'flop', blaze: true, tail: 'straight' },
+    husky: { name: '허스키', fur: '#8d94a4', light: '#ffffff', ear: 'point', mask: true, tail: 'plume' },
+    golden: { name: '골든 리트리버', fur: '#e8b56a', light: '#f8ddb0', ear: 'flop', tail: 'plume' }
+  };
+  var BREED_KEYS = Object.keys(BREEDS);
+  var SHIRTS = ['#9cc3e6', '#f0a7b2', '#a6d1b0', '#f3cf86', '#c3b2ea', '#8fd0cb', '#f6c1a4'];
+
+  function dogLook(id, breed) {
+    var h = hashStr(String(id));
+    return {
+      breed: BREEDS[breed] ? breed : BREED_KEYS[h % BREED_KEYS.length],
+      shirt: SHIRTS[(h >> 4) % SHIRTS.length],
+      tie: (h >> 7) % 3 === 0
+    };
+  }
+
+  function fluffCircle(g, x, y, r, col, bumps, br) {
+    circ(g, x, y, r, col);
+    for (var i = 0; i < bumps; i++) {
+      var a = i / bumps * TAU;
+      circ(g, x + Math.cos(a) * (r - 0.6), y + Math.sin(a) * (r - 0.6), br, col);
+    }
+  }
+
+  function dogTail(g, B, bx, by, wag, side, t) {
+    // side: 꼬리가 뻗는 방향 (-1 왼쪽, 1 오른쪽, 0 위쪽)
+    g.save(); g.translate(bx, by); g.rotate(wag);
+    var c = B.fur;
+    if (B.tail === 'stub') {
+      circ(g, side * 1.5, -1.5, 2.2, c);
+    } else if (B.tail === 'curl') {
+      g.beginPath(); g.arc(side * 2.6, -4.2, 2.8, 0, TAU); stroke(g, 2.4, c);
+      circ(g, side * 2.6, -4.2, 1, B.light);
+    } else if (B.tail === 'pom') {
+      g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(side * 3, -2, side * 3.5, -6); stroke(g, 1.4, c);
+      fluffCircle(g, side * 3.6, -7.2, 2.4, B.light, 6, 1.1);
+    } else if (B.tail === 'straight') {
+      g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(side * 3.5, -3, side * 4.5, -8); stroke(g, 2.2, c);
+      circ(g, side * 4.5, -8.2, 1.3, B.light);
+    } else {
+      // 풍성한 꼬리
+      var pts = [[0, 0], [side * 2.6, -2.6], [side * 4.2, -5.6], [side * 4, -8.8], [side * 2.4, -10.6]];
+      pts.forEach(function (p, i) { circ(g, p[0], p[1], 2 + Math.sin(i / 4 * Math.PI) * 1.6, c); });
+      if (B.edge) pts.forEach(function (p, i) { if (i > 1) circ(g, p[0] - side * 0.6, p[1] - 0.4, 1, 'rgba(255,255,255,.6)'); });
+    }
+    g.restore();
+  }
+
+  function dogEars(g, B, x, hy, front, turn, behind) {
+    var c = B.earCol || B.fur, inner = '#f6b3b8';
+    if (B.ear === 'point' || B.ear === 'big') {
+      if (!behind) return;
+      var es = B.ear === 'big' ? 1.35 : 1;
+      [-1, 1].forEach(function (s) {
+        var ox = turn * 0.6;
+        var b1 = { x: x + s * 1.6 + ox, y: hy - 6.6 }, b2 = { x: x + s * 7.4 + ox, y: hy - 2.6 }, tip = { x: x + s * (5.8 + es) + ox, y: hy - 7.5 - 5.5 * es };
+        g.beginPath(); g.moveTo(b1.x, b1.y); g.quadraticCurveTo(tip.x - s * 1.2, tip.y + 1, tip.x, tip.y); g.quadraticCurveTo(tip.x + s * 1, tip.y + 2.5, b2.x, b2.y); g.closePath();
+        g.fillStyle = c; g.fill();
+        if (front) {
+          var m = { x: (b1.x + b2.x) / 2, y: (b1.y + b2.y) / 2 };
+          g.beginPath(); g.moveTo(m.x - s * 1.6, m.y - 0.8); g.lineTo(tip.x - s * 0.3, tip.y + 2.4); g.lineTo(m.x + s * 1.4, m.y + 0.4); g.closePath();
+          g.fillStyle = inner; g.fill();
+        }
+      });
+      return;
+    }
+    if (behind) return;
+    [-1, 1].forEach(function (s) {
+      var ex = x + s * 7 + turn * 0.4;
+      if (B.ear === 'curlflop') {
+        [[0, -1], [0.6, 1.8], [0, 4.4], [0.4, 6.6]].forEach(function (p) { circ(g, ex + s * p[0], hy + p[1], 2.4, c); });
+      } else if (B.ear === 'longflop') {
+        ell(g, ex, hy + 3, 2.8, 7.2, c, s * 0.18);
+        if (B.edge) ell(g, ex + s * 0.8, hy + 4, 1, 5.5, B.edge, s * 0.18);
+      } else {
+        ell(g, ex, hy + 1.4, 3, 5.6, c, s * 0.28);
+      }
+    });
+  }
+
+  function dogHead(g, B, x, hy, front, turn, p) {
+    var R = 8;
+    dogEars(g, B, x, hy, front, turn, true);
+    if (B.fluffy) { fluffCircle(g, x, hy, R, B.fur, 12, 2.4); if (B.edge) { g.beginPath(); g.arc(x, hy, R + 1.5, Math.PI * 0.15, Math.PI * 0.85); stroke(g, 0.6, B.edge); } }
+    else if (B.curly) { fluffCircle(g, x, hy, R - 0.5, B.fur, 11, 2.3); fluffCircle(g, x, hy - 7.5, 3.2, B.light, 6, 1.4); }
+    else ell(g, x, hy, R + 0.3, R - 0.3, B.fur);
+
+    if (!front) {
+      if (B.mask) ell(g, x, hy + 4.5, 5.5, 3, 'rgba(255,255,255,.6)');
+      dogEars(g, B, x, hy, front, turn, false);
+      if (B.bow) drawBow(g, x - 3.5, hy - 6.4, B.bow);
+      return;
+    }
+
+    var ex = turn * 1.1;
+    // 무늬
+    if (B.mask) {
+      ell(g, x + ex * 0.5, hy + 2.6, 6.4, 5.2, B.light);
+      circ(g, x - 2.7 + ex, hy - 2.4, 1.05, B.light); circ(g, x + 2.7 + ex, hy - 2.4, 1.05, B.light);
+    }
+    if (B.cheeks) { ell(g, x - 3.8 + ex, hy + 3, 3.4, 2.7, B.light); ell(g, x + 3.8 + ex, hy + 3, 3.4, 2.7, B.light); }
+    if (B.blaze) rr(g, x - 1 + ex, hy - 7, 2, 8, 1, B.light);
+    ell(g, x + ex * 0.9, hy + 3.3, 3.8, 2.8, B.light);
+
+    // 눈
+    var eye = '#2b2026';
+    if (p.blink) {
+      limb(g, x - 3.8 + ex, hy + 0.3, x - 1.9 + ex, hy + 0.3, 0.6, eye); limb(g, x + 1.9 + ex, hy + 0.3, x + 3.8 + ex, hy + 0.3, 0.6, eye);
+    } else if (p.happy) {
+      g.beginPath(); g.arc(x - 2.9 + ex, hy + 0.9, 1.2, Math.PI, 0); stroke(g, 0.7, eye);
+      g.beginPath(); g.arc(x + 2.9 + ex, hy + 0.9, 1.2, Math.PI, 0); stroke(g, 0.7, eye);
+    } else {
+      ell(g, x - 2.9 + ex, hy + 0.2, 1.2, 1.45, eye); ell(g, x + 2.9 + ex, hy + 0.2, 1.2, 1.45, eye);
+      circ(g, x - 2.5 + ex, hy - 0.4, 0.45, '#fff'); circ(g, x + 3.3 + ex, hy - 0.4, 0.45, '#fff');
+    }
+    // 코와 입
+    ell(g, x + ex, hy + 2.5, 1.4, 1, '#3a2a2e');
+    circ(g, x + ex - 0.4, hy + 2.2, 0.35, 'rgba(255,255,255,.7)');
+    if (p.happy || (p.talking && Math.sin(p.t * 14) > 0)) {
+      ell(g, x + ex, hy + 4.6, 1.5, 1.3, '#a8505c');
+      ell(g, x + ex, hy + 5.2, 1, 0.8, '#ff8fa3');
+    } else {
+      g.beginPath();
+      g.moveTo(x + ex - 1.6, hy + 3.7); g.quadraticCurveTo(x + ex - 0.8, hy + 4.6, x + ex, hy + 3.5);
+      g.quadraticCurveTo(x + ex + 0.8, hy + 4.6, x + ex + 1.6, hy + 3.7);
+      stroke(g, 0.5, '#7a4a52');
+    }
+    ell(g, x - 5 + ex, hy + 2.6, 1.6, 1, 'rgba(255,140,150,.45)'); ell(g, x + 5 + ex, hy + 2.6, 1.6, 1, 'rgba(255,140,150,.45)');
+    dogEars(g, B, x, hy, front, turn, false);
+    if (B.bow) drawBow(g, x - 3.5, hy - 6.4, B.bow);
+  }
+
+  function drawBow(g, x, y, col) {
+    g.beginPath(); g.moveTo(x, y); g.lineTo(x - 3, y - 2); g.lineTo(x - 3, y + 2); g.closePath(); g.fillStyle = col; g.fill();
+    g.beginPath(); g.moveTo(x, y); g.lineTo(x + 3, y - 2); g.lineTo(x + 3, y + 2); g.closePath(); g.fill();
+    circ(g, x, y, 1.1, shadeCol(col, -0.15));
+  }
+
+  /*
+   * 강아지 그리기. p 는 drawPerson 과 같은 형식 (look 은 { breed, shirt, tie })
+   */
+  function drawDog(g, p, x, y, t) {
+    var L = p.look, B = BREEDS[L.breed] || BREEDS.pomeranian;
+    var dir = p.dir || 'SW';
+    var front = dir === 'SE' || dir === 'SW';
+    var turn = dir === 'SE' || dir === 'NE' ? 1 : -1;
+    var sw = p.moving ? Math.sin(p.phase) : 0;
+    var bob = p.moving ? -Math.abs(Math.cos(p.phase)) * 1.1 : p.typing ? (Math.sin(t * 10 + p.seed) > 0.3 ? -0.35 : 0) : Math.sin(t * 1.7 + p.seed) * 0.35;
+    var sit = p.sitting ? 4 : 0;
+    var legLen = B.shortLegs ? 6 : 8;
+    var by = y - legLen - 11 + bob + sit;
+    var hy = by - 6.5;
+    var wag = Math.sin(t * (p.happy || p.moving ? 15 : 5) + p.seed) * (p.happy ? 0.55 : p.moving ? 0.35 : 0.2);
+    p.t = t;
+
+    if (!p.sitting) ell(g, x, y, 6.5, 2.2, 'rgba(110,70,60,.18)');
+    if (front) dogTail(g, B, x - turn * 4.5, by + 8.5, wag, -turn, t);
+
+    // 다리 (털 + 발바닥)
+    if (!p.sitting) {
+      var hip = by + 10.5;
+      var l1 = Math.max(0, sw) * 2, l2 = Math.max(0, -sw) * 2;
+      var lx = turn * sw * 0.8;
+      rr(g, x - 4.2 + lx, hip - 1, 3.6, legLen + 1 - l1, 1.8, B.fur); rr(g, x + 0.6 - lx, hip - 1, 3.6, legLen + 1 - l2, 1.8, B.fur);
+      ell(g, x - 2.4 + lx + turn * 0.5, y - 0.9 - l1, 2.3, 1.3, B.light); ell(g, x + 2.4 - lx + turn * 0.5, y - 0.9 - l2, 2.3, 1.3, B.light);
+      if (B.edge) { ell(g, x - 2.4 + lx + turn * 0.5, y - 0.4 - l1, 2.1, 0.5, B.edge); ell(g, x + 2.4 - lx + turn * 0.5, y - 0.4 - l2, 2.1, 0.5, B.edge); }
+    } else {
+      rr(g, x - 4.6, by + 9.5, 9.2, 3.5, 1.7, B.fur);
+    }
+
+    // 셔츠
+    rr(g, x - 6, by, 12, 11.5, 4.8, L.shirt);
+    g.fillStyle = 'rgba(80,50,60,.07)'; rrPath(g, x - 6, by + 7.5, 12, 4, 2); g.fill();
+    if (!front) dogTail(g, B, x, by + 9, wag, turn * 0.6, t);
+    if (front) {
+      g.beginPath(); g.moveTo(x - 3 + turn, by - 0.2); g.lineTo(x + turn, by + 2.6); g.lineTo(x + 3 + turn, by - 0.2); g.fillStyle = 'rgba(255,255,255,.85)'; g.fill();
+      if (L.tie) { g.beginPath(); g.moveTo(x + turn - 0.9, by + 2); g.lineTo(x + turn + 0.9, by + 2); g.lineTo(x + turn + 1.1, by + 6.5); g.lineTo(x + turn, by + 7.6); g.lineTo(x + turn - 1.1, by + 6.5); g.closePath(); g.fillStyle = shadeCol(L.shirt, -0.35); g.fill(); }
+    }
+    if (B.ruff) for (var r = -2; r <= 2; r++) circ(g, x + r * 2.4 + turn * 0.5, by + 0.6 + Math.abs(r) * 0.3, 2.3, B.fur);
+
+    // 팔 (소매 + 앞발)
+    var armCol = shadeCol(L.shirt, -0.04);
+    var paw = B.fur;
+    if (p.carrying && front) {
+      limb(g, x - 5.4, by + 2.5, x - 4, by + 7, 2.8, armCol); limb(g, x + 5.4, by + 2.5, x + 4, by + 7, 2.8, armCol);
+    } else if (p.typing) {
+      var tp = Math.sin(t * 14 + p.seed) * 0.6;
+      if (front) { limb(g, x - 5.4, by + 2.5, x - 3.2, by + 8 + tp, 2.8, armCol); limb(g, x + 5.4, by + 2.5, x + 3.2, by + 8 - tp, 2.8, armCol); circ(g, x - 3.2, by + 8.6 + tp, 1.6, paw); circ(g, x + 3.2, by + 8.6 - tp, 1.6, paw); }
+      else { limb(g, x - 5.4, by + 2.5, x - 6.5, by + 6.5 + tp, 2.8, armCol); limb(g, x + 5.4, by + 2.5, x + 6.5, by + 6.5 - tp, 2.8, armCol); }
+    } else {
+      limb(g, x - 5.4, by + 2.5, x - 6.6, by + 8.4 + sw * 1.4, 2.8, armCol); limb(g, x + 5.4, by + 2.5, x + 6.6, by + 8.4 - sw * 1.4, 2.8, armCol);
+      circ(g, x - 6.6, by + 9.5 + sw * 1.4, 1.7, paw); circ(g, x + 6.6, by + 9.5 - sw * 1.4, 1.7, paw);
+    }
+    if (p.carrying && !front) { rr(g, x - 7.5, by + 3, 2, 6, 1, '#f4cf7a'); rr(g, x + 5.5, by + 3, 2, 6, 1, '#f4cf7a'); }
+
+    dogHead(g, B, x, hy, front, turn, p);
+
+    if (p.carrying && front) {
+      g.save(); g.translate(x + turn, by + 5.5);
+      rr(g, -5.5, -4.5, 11, 9, 1.8, '#e9b85f');
+      rr(g, -4.5, -5.5, 9, 3, 1, '#fffdf8');
+      rr(g, -5.5, -3.5, 11, 8, 1.8, '#f6d38d');
+      circ(g, 0, 0.5, 1.6, '#e8848c');
+      g.restore();
+      circ(g, x - 4.8, by + 7.4, 1.7, paw); circ(g, x + 4.8, by + 7.4, 1.7, paw);
+    }
+  }
+
+  /* 근무 현황 목록에 쓰는 동그란 얼굴 사진 */
+  var avatarCache = {};
+  function dogAvatar(look) {
+    var key = look.breed + look.shirt + (look.tie ? 't' : '');
+    if (avatarCache[key]) return avatarCache[key];
+    var c = document.createElement('canvas');
+    c.width = c.height = 96;
+    var g = c.getContext('2d');
+    g.scale(4, 4);
+    circ(g, 12, 12, 12, '#fdf1e8');
+    g.save(); g.beginPath(); g.arc(12, 12, 12, 0, TAU); g.clip();
+    drawDog(g, { look: look, dir: 'SE', seed: 0, happy: false }, 12.5, 38, 0);
+    g.restore();
+    avatarCache[key] = c.toDataURL();
+    return avatarCache[key];
+  }
+
+  /* ================================================================
    * 7. 말풍선, 이름표
    * ================================================================ */
   function textWidth(text, font) { ctx.font = font; return ctx.measureText(text).width; }
@@ -1112,6 +1350,7 @@
   var state = {
     agents: [],
     particles: [],
+    prints: [],
     motes: [],
     approvals: [],          // {id, agentId, title, detail, status: 'coming'|'arrived'|'approved'|'rejected', ...}
     approvedPile: 0,
@@ -1210,7 +1449,7 @@
       id: id,
       name: opts.name || id,
       dept: dept,
-      look: opts.look || LOOKS[hashStr(id) % LOOKS.length],
+      look: opts.look || dogLook(id, opts.breed),
       seed: (hashStr(id) % 100) / 10,
       x: DOOR.x, y: DOOR.y, dir: 'SE',
       phase: 0,
@@ -1237,7 +1476,7 @@
     state.agents.push(agent);
     openElevator(2600);
     say(agent, '출근했습니다~', 3000, 650);
-    log('🌤️', agent.name + ' 출근 · ' + DEPTS[dept].name + ' (' + agent.task + ')');
+    log('🐾', agent.name + '(' + (BREEDS[agent.look.breed] || {}).name + ') 출근 · ' + DEPTS[dept].name + ' (' + agent.task + ')');
     setPath(agent, pathDoorToSeat(seat), function () {
       agent.state = 'working';
       agent.dir = seat.face;
@@ -1355,7 +1594,7 @@
         a.happyUntil = performance.now() + 2600;
         state.approvedPile += 1;
         state.bossHappyUntil = performance.now() + 2200;
-        say(a, '감사합니다! 바로 진행할게요', 2600);
+        say(a, '멍! 감사합니다, 바로 할게요', 2600);
         var ps = iso(a.x, a.y, 0);
         state.particles.push({ kind: 'stamp', x: ps.x, y: ps.y - 46, vy: -5, life: 1.5, max: 1.5, text: '승인' });
         for (var h = 0; h < 5; h++) state.particles.push({ kind: 'heart', x: ps.x - 6 + Math.random() * 12, y: ps.y - 30, vx: (Math.random() - 0.5) * 8, vy: -10 - Math.random() * 8, life: 1.6, max: 1.6 });
@@ -1451,6 +1690,13 @@
           a.x += dx / dist * step; a.y += dy / dist * step;
         }
         a.phase += dt * 9.5;
+        a.printAcc = (a.printAcc || 0) + step;
+        if (a.printAcc > 0.42 && a.alpha > 0.5) {
+          a.printAcc = 0; a.printSide = -(a.printSide || 1);
+          var nx = dx / (dist || 1), ny = dy / (dist || 1);
+          state.prints.push({ x: a.x - ny * 0.12 * a.printSide, y: a.y + nx * 0.12 * a.printSide, life: 2.6, max: 2.6 });
+          if (state.prints.length > 80) state.prints.shift();
+        }
       } else if (a.state === 'working') {
         if (now > a.nextDoc) {
           a.nextDoc = now + 6000 + Math.random() * 6000;
@@ -1554,10 +1800,10 @@
         if (!a || a.state === 'gone') return;
         var dk = seat.desk;
         var c = iso(dk.x + dk.w / 2, dk.y + dk.d / 2, DESK_H);
-        L.push({ x: c.x, y: c.y, r: 26, a: 0.75, col: '255,200,130', ga: 0.16 });
+        L.push({ x: c.x, y: c.y, r: 24, a: 0.7, col: '255,200,130', ga: 0.09 });
         if (a.state === 'working' && !a.moving) {
           var m = iso(seat.x, seat.row === 0 ? dk.y + dk.d : dk.y, DESK_H + 10);
-          L.push({ x: m.x, y: m.y, r: 18, a: 0.7, col: '150,215,255', ga: 0.15 });
+          L.push({ x: m.x, y: m.y, r: 16, a: 0.6, col: '150,215,255', ga: 0.08 });
         }
       });
       var d = DEPTS[k], sp = iso(d.sign.x, d.sign.y, 26);
@@ -1580,7 +1826,7 @@
     var b = iso(BOSS_RUG[0] + 0.9, BOSS_RUG[3] - 0.45, 2);
     L.push({ x: b.x, y: b.y, r: 18, a: 0.4, col: '255,159,214', ga: 0.12 });
     state.agents.forEach(function (a) {
-      if (a.focusUntil > now) { var p = iso(a.x, a.y, 18); L.push({ x: p.x, y: p.y, r: 22, a: 0.5, col: '255,220,140', ga: 0.2 }); }
+      if (a.focusUntil > now) { var p = iso(a.x, a.y, 18); L.push({ x: p.x, y: p.y, r: 20, a: 0.45, col: '255,220,140', ga: 0.12 }); }
     });
     return L;
   }
@@ -1649,6 +1895,16 @@
     drawClock();
     drawNeon(t, false);
     drawFloorText();
+    // 발자국
+    state.prints.forEach(function (pr) {
+      pr.life -= dt;
+      if (pr.life <= 0) return;
+      var c = iso(pr.x, pr.y, 0), a = Math.min(1, pr.life / pr.max * 1.6) * (NIGHT ? 0.25 : 0.32);
+      var col = 'rgba(150,100,80,' + a.toFixed(3) + ')';
+      ell(g, c.x, c.y + 0.4, 1.5, 1, col);
+      circ(g, c.x - 1.5, c.y - 1, 0.55, col); circ(g, c.x, c.y - 1.5, 0.55, col); circ(g, c.x + 1.5, c.y - 1, 0.55, col);
+    });
+    state.prints = state.prints.filter(function (pr) { return pr.life > 0; });
 
     // 깊이 정렬 (월드 x + y 가 작을수록 뒤쪽)
     var list = [];
@@ -1691,7 +1947,7 @@
           g.beginPath(); g.arc(0, 0, 10, 0, TAU); stroke(g, 1.2, NIGHT ? 'rgba(255,143,200,.8)' : 'rgba(232,132,140,.8)');
           g.restore();
         }
-        drawPerson(g, {
+        (a.look.breed ? drawDog : drawPerson)(g, {
           look: a.look, dir: a.dir, moving: a.moving, phase: a.phase, seed: a.seed,
           carrying: a.carrying, typing: sitting, sitting: sitting,
           talking: !!(a.bubble && a.bubble.from < now && a.bubble.until > now), blink: a.blink, happy: a.happyUntil > now
@@ -1854,18 +2110,11 @@
       el.roster.innerHTML = state.agents.map(function (a) {
         var st = STATE_LABEL[a.state] || ['?', ''];
         return '<li class="ro-item' + (state.selected === a.id ? ' selected' : '') + '" data-agent="' + esc(a.id) + '">' +
-          '<span class="avatar"></span>' +
-          '<span class="ro-body"><strong>' + esc(a.name) + '</strong><span>' + esc(DEPTS[a.dept].name) + ' · ' + esc(shorten(a.task, 18)) + '</span></span>' +
+          (a.look.breed ? '<img class="avatar" alt="" src="' + dogAvatar(a.look) + '">' : '<span class="avatar"></span>') +
+          '<span class="ro-body"><strong>' + esc(a.name) + ' <small>' + esc((BREEDS[a.look.breed] || {}).name || '') + '</small></strong><span>' + esc(DEPTS[a.dept].name) + ' · ' + esc(shorten(a.task, 18)) + '</span></span>' +
           '<span class="chip ' + st[1] + '">' + st[0] + '</span>' +
           '<span class="ro-stat">' + a.docs + '건 · ' + a.percent + '%</span></li>';
       }).join('');
-      // CSP(인라인 style 금지) 때문에 아바타 색은 DOM API로 지정
-      Array.prototype.forEach.call(el.roster.querySelectorAll('.avatar'), function (av, i) {
-        var lk = state.agents[i].look;
-        av.style.setProperty('--shirt', lk.shirt);
-        av.style.setProperty('--hair', lk.hair);
-        av.style.setProperty('--skin', lk.skin);
-      });
     }
 
     var working = state.agents.filter(function (a) { return a.state !== 'gone' && a.state !== 'leaving'; }).length;
@@ -1995,7 +2244,7 @@
     if (!ev || typeof ev !== 'object') return;
     var type = ev.type;
     var id = ev.agentId || ev.agent || ev.id;
-    if (type === 'checkin') return checkIn({ id: ev.agentId || ev.agent, name: ev.name, dept: ev.dept, task: ev.task });
+    if (type === 'checkin') return checkIn({ id: ev.agentId || ev.agent, name: ev.name, dept: ev.dept, task: ev.task, breed: ev.breed });
     if (type === 'progress') return progress(id, { task: ev.task, percent: ev.percent, docs: ev.docs });
     if (type === 'approval') return requestApproval(id, { approvalId: ev.approvalId, title: ev.title, detail: ev.detail });
     if (type === 'checkout') return checkOut(id);
@@ -2043,8 +2292,9 @@
   /* ================================================================
    * 15. 데모
    * ================================================================ */
-  var DEMO_NAMES = ['기록이', '서기봇', '문서왕', '메모리', '타자봇', '정리왕'];
-  var DEMO_TASKS = ['주간 회의록 정리', '프로젝트 기획서 초안', '블로그 글 교정', '보고서 요약본 작성', '매뉴얼 목차 구성', '독서 노트 정리'];
+  var DEMO_NAMES = ['포미', '사모', '시바', '코기', '말랑', '푸딩', '비비', '허니', '골디'];
+  var DEMO_BREEDS = ['pomeranian', 'samoyed', 'shiba', 'corgi', 'maltese', 'poodle', 'beagle', 'husky', 'golden'];
+  var DEMO_TASKS = ['주간 회의록 정리', '프로젝트 기획서 초안', '블로그 글 교정', '보고서 요약본 작성', '매뉴얼 목차 구성', '독서 노트 정리', '회의 안건 정리', '자료 목록 만들기', '메일 초안 쓰기'];
   var DEMO_APPROVALS = [
     { title: '주간 보고서 v1 배포', detail: '이번 주 회의 3건을 요약한 보고서입니다.\n- 결정 사항 5건, 할 일 8건 정리\n- 노션 "주간 보고" 페이지에 게시 예정\n\n게시해도 될까요?' },
     { title: '기획서 초안 공유', detail: '프로젝트 기획서 초안(4쪽)을 팀 드라이브에 공유하려고 합니다.\n외부 공유는 하지 않습니다.' },
@@ -2058,7 +2308,7 @@
     if (!free) { toast('기록부 자리가 모두 찼어요.'); return null; }
     var i = demoN++ % DEMO_NAMES.length;
     var id = 'demo-' + i + '-' + Date.now().toString(36);
-    return checkIn({ id: id, name: DEMO_NAMES[i], dept: 'records', task: DEMO_TASKS[i] });
+    return checkIn({ id: id, name: DEMO_NAMES[i], breed: DEMO_BREEDS[i], dept: 'records', task: DEMO_TASKS[i] });
   }
 
   function pickWorking() {
@@ -2114,7 +2364,7 @@
     onDecision: function (fn) { state.listeners.push(fn); },
     agents: function () {
       return state.agents.map(function (a) {
-        return { id: a.id, name: a.name, dept: a.dept, state: a.state, task: a.task, percent: a.percent, docs: a.docs };
+        return { id: a.id, name: a.name, breed: a.look.breed, dept: a.dept, state: a.state, task: a.task, percent: a.percent, docs: a.docs };
       });
     },
     gust: function () { gust(performance.now()); },
