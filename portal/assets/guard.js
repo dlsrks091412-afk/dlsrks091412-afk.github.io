@@ -9,7 +9,7 @@
     var clock = document.querySelector('[data-clock]');
     if (clock) {
       var tick = function () {
-        clock.textContent = new Date().toLocaleString('ko-KR', { month: 'short', day: 'numeric', weekday: 'short', hour: '2-digit', minute: '2-digit' });
+        clock.textContent = new Date().toLocaleString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short', hour: '2-digit', minute: '2-digit' });
       };
       tick(); setInterval(tick, 15000);
     }

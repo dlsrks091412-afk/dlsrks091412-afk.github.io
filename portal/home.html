@@ -5,10 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://cdn.jsdelivr.net; font-src https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self'; base-uri 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; object-src 'none'">
 <title>홈 · My Portal</title>
 <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+<script src="assets/ui.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap">
 <link rel="stylesheet" href="assets/portal.css">
 <link rel="stylesheet" href="assets/home.css">
 <script src="assets/auth-config.js"></script>
@@ -17,57 +19,58 @@
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="home.html"><img class="logo" src="assets/logo.svg" alt=""> My Portal</a>
+    <a class="brand" href="home.html"><img class="logo" src="assets/logo.svg" alt=""> <span class="brand-text">My Portal</span></a>
     <nav>
       <a href="home.html" aria-current="page">홈</a>
       <a href="office.html">AI 사무실</a>
     </nav>
     <span class="spacer"></span>
     <span class="clock" data-clock></span>
+    <button class="theme-toggle" type="button" data-theme-toggle><span class="orb" aria-hidden="true"></span><span class="theme-text">자동</span></button>
     <button class="btn ghost small" data-logout type="button">로그아웃</button>
   </header>
 
   <main class="home">
-    <section class="hello">
-      <p class="pixel eyebrow">WELCOME BACK</p>
-      <h1 class="pixel">오늘도 좋은 하루예요, 대표님.</h1>
-      <p>연결된 공간들로 바로 이동할 수 있어요.</p>
+    <section class="hello rise">
+      <p class="soft eyebrow" id="greetSmall">WELCOME BACK</p>
+      <h1 class="soft" id="greet">오늘도 좋은 하루예요, 대표님.</h1>
+      <p>연결된 공간들로 천천히 둘러보세요.</p>
     </section>
 
     <section class="tiles">
-      <a class="panel tile live" href="office.html">
-        <span class="tile-icon office" aria-hidden="true"></span>
+      <a class="card tile live rise" href="office.html">
+        <span class="tile-art office" aria-hidden="true">
+          <svg viewBox="0 0 80 80"><rect x="6" y="10" width="68" height="40" rx="8" class="wall"/><rect x="14" y="16" width="22" height="26" rx="4" class="glass"/><rect x="44" y="16" width="22" height="26" rx="4" class="glass"/><circle cx="58" cy="24" r="4" class="sun"/><rect x="6" y="50" width="68" height="22" rx="6" class="floor"/><rect x="20" y="46" width="30" height="8" rx="3" class="desk"/><circle cx="35" cy="38" r="6" class="head"/><rect x="29" y="43" width="12" height="8" rx="4" class="shirt"/><path d="M60 52c0-8 6-10 6-16" class="leaf"/><ellipse cx="66" cy="34" rx="4" ry="6" class="leafy"/><rect x="58" y="52" width="9" height="9" rx="2" class="pot"/></svg>
+        </span>
         <span class="tile-body">
-          <strong class="pixel">AI 에이전트 사무실</strong>
+          <strong class="soft">AI 에이전트 사무실</strong>
           <span>에이전트들이 지금 무슨 일을 하는지 보고, 결재를 처리해요.</span>
         </span>
-        <span class="tag">운영 중</span>
+        <span class="tag live">운영 중</span>
       </a>
-      <div class="panel tile soon">
-        <span class="tile-icon note" aria-hidden="true"></span>
-        <span class="tile-body">
-          <strong class="pixel">블로그 · 기록</strong>
-          <span>글과 메모를 모아 둘 공간</span>
+      <div class="card tile soon rise">
+        <span class="tile-art" aria-hidden="true">
+          <svg viewBox="0 0 80 80"><rect x="20" y="12" width="40" height="54" rx="6" class="paper"/><rect x="28" y="24" width="24" height="3" rx="1.5" class="line"/><rect x="28" y="33" width="20" height="3" rx="1.5" class="line"/><rect x="28" y="42" width="24" height="3" rx="1.5" class="line"/><circle cx="58" cy="60" r="10" class="sun"/></svg>
         </span>
+        <span class="tile-body"><strong class="soft">블로그 · 기록</strong><span>글과 메모를 모아 둘 공간</span></span>
         <span class="tag">준비 중</span>
       </div>
-      <div class="panel tile soon">
-        <span class="tile-icon folder" aria-hidden="true"></span>
-        <span class="tile-body">
-          <strong class="pixel">프로젝트</strong>
-          <span>진행 중인 작업과 결과물</span>
+      <div class="card tile soon rise">
+        <span class="tile-art" aria-hidden="true">
+          <svg viewBox="0 0 80 80"><path d="M12 26a6 6 0 0 1 6-6h14l6 6h24a6 6 0 0 1 6 6v26a6 6 0 0 1-6 6H18a6 6 0 0 1-6-6z" class="folder"/><circle cx="54" cy="46" r="6" class="leafy"/></svg>
         </span>
+        <span class="tile-body"><strong class="soft">프로젝트</strong><span>진행 중인 작업과 결과물</span></span>
         <span class="tag">준비 중</span>
       </div>
-      <div class="panel tile soon">
-        <span class="tile-icon link" aria-hidden="true"></span>
-        <span class="tile-body">
-          <strong class="pixel">바로가기</strong>
-          <span>자주 쓰는 서비스 링크 모음</span>
+      <div class="card tile soon rise">
+        <span class="tile-art" aria-hidden="true">
+          <svg viewBox="0 0 80 80"><rect x="10" y="30" width="34" height="20" rx="10" class="ring"/><rect x="36" y="30" width="34" height="20" rx="10" class="ring"/></svg>
         </span>
+        <span class="tile-body"><strong class="soft">바로가기</strong><span>자주 쓰는 서비스 링크 모음</span></span>
         <span class="tag">준비 중</span>
       </div>
     </section>
   </main>
+  <script src="assets/home.js"></script>
 </body>
 </html>

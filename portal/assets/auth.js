@@ -119,7 +119,8 @@
   function logout() {
     safeDel(localStorage, SESSION_KEY);
     safeDel(sessionStorage, SESSION_KEY);
-    location.replace('index.html');
+    if (window.PortalNav) window.PortalNav.go('index.html', true);
+    else location.replace('index.html');
   }
 
   /* 보호 페이지 <head> 에서 호출: 로그인 안 되어 있으면 로그인 화면으로 */

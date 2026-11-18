@@ -5,41 +5,72 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://cdn.jsdelivr.net; font-src https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'">
+<meta name="view-transition" content="same-origin">
 <title>로그인 · My Portal</title>
 <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+<script src="assets/ui.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap">
 <link rel="stylesheet" href="assets/portal.css">
 <link rel="stylesheet" href="assets/login.css">
 <script src="assets/auth-config.js"></script>
 <script src="assets/auth.js"></script>
 </head>
 <body class="login-page">
-  <div class="sky" aria-hidden="true">
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-    <span class="star"></span>
-  </div>
+  <!-- 배경 일러스트: 구름 위 고층 사무실 (색은 login.css 에서 낮/밤 테마별로 지정) -->
+  <svg class="scene" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop class="sky1" offset="0"/>
+        <stop class="sky2" offset=".55"/>
+        <stop class="sky3" offset="1"/>
+      </linearGradient>
+      <radialGradient id="orbGlow">
+        <stop class="glow1" offset="0"/>
+        <stop class="glow2" offset="1"/>
+      </radialGradient>
+      <linearGradient id="towerGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop class="tw1" offset="0"/>
+        <stop class="tw2" offset="1"/>
+      </linearGradient>
+    </defs>
+    <rect class="sky" width="1600" height="1000" fill="url(#skyGrad)"/>
+    <g id="stars" class="stars"></g>
+    <circle class="orb-glow" cx="1240" cy="230" r="260" fill="url(#orbGlow)"/>
+    <mask id="moonMask">
+      <rect width="1600" height="1000" fill="#fff"/>
+      <circle class="orb-bite" cx="1272" cy="204" r="58"/>
+    </mask>
+    <circle class="orb" cx="1240" cy="230" r="64" mask="url(#moonMask)"/>
+
+    <g class="clouds">
+      <g class="cloud c1"><ellipse cx="220" cy="210" rx="120" ry="34"/><ellipse cx="180" cy="190" rx="60" ry="40"/><ellipse cx="260" cy="185" rx="70" ry="48"/></g>
+      <g class="cloud c2"><ellipse cx="760" cy="140" rx="150" ry="30"/><ellipse cx="720" cy="120" rx="70" ry="36"/><ellipse cx="810" cy="115" rx="80" ry="44"/></g>
+      <g class="cloud c3"><ellipse cx="1420" cy="380" rx="130" ry="28"/><ellipse cx="1390" cy="362" rx="60" ry="32"/><ellipse cx="1460" cy="358" rx="64" ry="36"/></g>
+    </g>
+
+    <path class="mtn-far" d="M0 620 C180 540 300 560 420 590 S700 500 860 560 1120 520 1280 570 1480 540 1600 580 V1000 H0Z"/>
+    <path class="mtn-mid" d="M0 680 C160 630 320 650 480 670 S760 610 920 650 1200 620 1360 655 1520 640 1600 650 V1000 H0Z"/>
+    <g id="city" class="city"></g>
+    <path class="hill-back" d="M0 800 C200 740 420 760 620 790 S1000 730 1240 770 1500 760 1600 770 V1000 H0Z"/>
+    <path class="hill-front" d="M0 880 C220 830 460 850 700 870 S1120 820 1360 850 1560 840 1600 845 V1000 H0Z"/>
+    <g id="flowers" class="flowers"></g>
+    <g id="floaters" class="floaters"></g>
+  </svg>
+
+  <button class="theme-toggle corner" type="button" data-theme-toggle><span class="orb" aria-hidden="true"></span><span class="theme-text">자동</span></button>
 
   <main class="login-wrap">
-    <div class="building" aria-hidden="true">
-      <div class="roof"></div>
-      <div class="floor"><i></i><i class="on"></i><i></i><i class="on"></i></div>
-      <div class="floor"><i class="on"></i><i></i><i class="on"></i><i class="on"></i></div>
-      <div class="door"></div>
-    </div>
-
-    <form class="panel login-card" id="loginForm" autocomplete="on" novalidate>
-      <p class="eyebrow pixel">PRIVATE · 관계자 외 출입금지</p>
-      <h1 class="pixel">My Portal</h1>
-      <p class="sub">개인 사이트에 들어가려면 비밀번호를 입력하세요.</p>
+    <form class="card login-card" id="loginForm" autocomplete="on" novalidate>
+      <img class="login-logo" src="assets/logo.svg" alt="">
+      <p class="eyebrow soft">구름 위 작은 사무실</p>
+      <h1 class="soft">My Portal</h1>
+      <p class="sub">대표님만 들어올 수 있는 공간이에요.<br>비밀번호를 입력해 주세요.</p>
 
       <input type="text" name="username" value="owner" autocomplete="username" hidden>
       <label class="field">
-        <span class="pixel">비밀번호</span>
+        <span>비밀번호</span>
         <input id="password" name="password" type="password" autocomplete="current-password" required autofocus>
       </label>
       <label class="remember">
@@ -47,7 +78,7 @@
         <span>이 기기에서 7일간 로그인 유지</span>
       </label>
 
-      <button class="btn good login-btn" id="submitBtn" type="submit">출입하기</button>
+      <button class="btn login-btn" id="submitBtn" type="submit">들어가기</button>
       <p class="msg" id="msg" role="status" aria-live="polite"></p>
       <p class="hint" id="setupHint" hidden>
         아직 비밀번호가 설정되지 않았어요. <a href="tools/set-password.html">비밀번호 설정 도구</a>로 만든 뒤 <code>assets/auth-config.js</code>를 교체하세요.

@@ -6,10 +6,12 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
 <!-- 외부 이벤트 서버를 연결하면 connect-src 에 그 주소를 추가하세요. 예: connect-src 'self' https://my-office-api.example.workers.dev -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://cdn.jsdelivr.net; font-src https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self'; base-uri 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; base-uri 'none'; object-src 'none'">
 <title>AI 사무실 · My Portal</title>
 <link rel="icon" href="assets/logo.svg" type="image/svg+xml">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+<script src="assets/ui.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap">
 <link rel="stylesheet" href="assets/portal.css">
 <link rel="stylesheet" href="assets/office.css">
 <script src="assets/auth-config.js"></script>
@@ -18,50 +20,55 @@
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="home.html"><img class="logo" src="assets/logo.svg" alt=""> My Portal</a>
+    <a class="brand" href="home.html"><img class="logo" src="assets/logo.svg" alt=""> <span class="brand-text">My Portal</span></a>
     <nav>
       <a href="home.html">홈</a>
       <a href="office.html" aria-current="page">AI 사무실</a>
     </nav>
     <span class="spacer"></span>
     <span class="clock" data-clock></span>
+    <button class="theme-toggle" type="button" data-theme-toggle><span class="orb" aria-hidden="true"></span><span class="theme-text">자동</span></button>
     <button class="btn ghost small" data-logout type="button">로그아웃</button>
   </header>
 
   <main class="office-layout">
-    <section class="stage">
+    <section class="stage rise">
       <div class="stage-head">
-        <h1 class="pixel">AI 에이전트 사무실</h1>
-        <dl class="stats pixel">
-          <div><dt>오늘 작성</dt><dd id="statDocs">0</dd></div>
-          <div><dt>근무 중</dt><dd id="statWorking">0</dd></div>
-          <div><dt>결재 대기</dt><dd id="statWaiting">0</dd></div>
+        <div>
+          <p class="soft floor-tag">42F · 구름 위 사무실</p>
+          <h1 class="soft">AI 에이전트 사무실</h1>
+        </div>
+        <dl class="stats">
+          <div><dt>오늘 작성</dt><dd id="statDocs" class="soft">0</dd></div>
+          <div><dt>근무 중</dt><dd id="statWorking" class="soft">0</dd></div>
+          <div><dt>결재 대기</dt><dd id="statWaiting" class="soft">0</dd></div>
         </dl>
       </div>
       <div class="stage-frame">
-        <canvas id="office" aria-label="에이전트들이 일하는 픽셀 사무실" role="img"></canvas>
-        <div class="toast pixel" id="toast" role="status" aria-live="polite"></div>
+        <canvas id="office" aria-label="에이전트들이 일하는 고층 사무실 그림" role="img"></canvas>
+        <div class="toast soft" id="toast" role="status" aria-live="polite"></div>
       </div>
       <div class="demo-bar">
-        <span class="pixel demo-label">데모</span>
+        <span class="demo-label">데모</span>
         <button class="btn small" data-demo="checkin" type="button">기록부 직원 출근</button>
         <button class="btn small" data-demo="approval" type="button">결재 요청 만들기</button>
         <button class="btn small ghost" data-demo="checkout" type="button">한 명 퇴근</button>
+        <button class="btn small ghost" data-demo="gust" type="button">창문 바람</button>
         <button class="btn small ghost" data-demo="notify" type="button">브라우저 알림 켜기</button>
       </div>
     </section>
 
     <aside class="side">
-      <section class="panel side-panel">
-        <h2 class="pixel">결재함 <span class="badge" id="approvalCount" hidden>0</span></h2>
+      <section class="card side-panel rise">
+        <h2 class="soft">결재함 <span class="badge" id="approvalCount" hidden>0</span></h2>
         <ul id="approvals" class="ap-list"></ul>
       </section>
-      <section class="panel side-panel">
-        <h2 class="pixel">근무 현황</h2>
+      <section class="card side-panel rise">
+        <h2 class="soft">근무 현황</h2>
         <ul id="roster" class="ro-list"></ul>
       </section>
-      <section class="panel side-panel">
-        <h2 class="pixel">업무 일지</h2>
+      <section class="card side-panel rise">
+        <h2 class="soft">업무 일지</h2>
         <ol id="log" class="log-list"></ol>
       </section>
     </aside>
@@ -70,10 +77,10 @@
   <dialog id="approvalDialog" class="ap-dialog">
     <form method="dialog" class="paper">
       <div class="paper-head">
-        <span class="pixel">결 재 서 류</span>
+        <span class="soft">결재 서류</span>
         <button id="dClose" class="x" type="button" aria-label="닫기">×</button>
       </div>
-      <h3 id="dTitle" class="pixel"></h3>
+      <h3 id="dTitle" class="soft"></h3>
       <p id="dFrom" class="from"></p>
       <pre id="dDetail" class="detail"></pre>
       <label class="comment">
