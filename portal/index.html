@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://cdn.jsdelivr.net; font-src https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'">
+<title>로그인 · My Portal</title>
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+<link rel="stylesheet" href="assets/portal.css">
+<link rel="stylesheet" href="assets/login.css">
+<script src="assets/auth-config.js"></script>
+<script src="assets/auth.js"></script>
+</head>
+<body class="login-page">
+  <div class="sky" aria-hidden="true">
+    <span class="star"></span>
+    <span class="star"></span>
+    <span class="star"></span>
+    <span class="star"></span>
+    <span class="star"></span>
+    <span class="star"></span>
+  </div>
+
+  <main class="login-wrap">
+    <div class="building" aria-hidden="true">
+      <div class="roof"></div>
+      <div class="floor"><i></i><i class="on"></i><i></i><i class="on"></i></div>
+      <div class="floor"><i class="on"></i><i></i><i class="on"></i><i class="on"></i></div>
+      <div class="door"></div>
+    </div>
+
+    <form class="panel login-card" id="loginForm" autocomplete="on" novalidate>
+      <p class="eyebrow pixel">PRIVATE · 관계자 외 출입금지</p>
+      <h1 class="pixel">My Portal</h1>
+      <p class="sub">개인 사이트에 들어가려면 비밀번호를 입력하세요.</p>
+
+      <input type="text" name="username" value="owner" autocomplete="username" hidden>
+      <label class="field">
+        <span class="pixel">비밀번호</span>
+        <input id="password" name="password" type="password" autocomplete="current-password" required autofocus>
+      </label>
+      <label class="remember">
+        <input id="remember" type="checkbox">
+        <span>이 기기에서 7일간 로그인 유지</span>
+      </label>
+
+      <button class="btn good login-btn" id="submitBtn" type="submit">출입하기</button>
+      <p class="msg" id="msg" role="status" aria-live="polite"></p>
+      <p class="hint" id="setupHint" hidden>
+        아직 비밀번호가 설정되지 않았어요. <a href="tools/set-password.html">비밀번호 설정 도구</a>로 만든 뒤 <code>assets/auth-config.js</code>를 교체하세요.
+      </p>
+    </form>
+  </main>
+
+  <script src="assets/login.js"></script>
+</body>
+</html>

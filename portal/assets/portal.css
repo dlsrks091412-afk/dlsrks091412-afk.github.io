@@ -1,0 +1,98 @@
+/* ===== 공통 스타일: 픽셀 오피스 테마 ===== */
+:root {
+  --bg: #1b1d2e;
+  --bg-2: #24273d;
+  --ink: #2b2230;
+  --ink-soft: #6b5e63;
+  --paper: #fbf3df;
+  --paper-2: #f1e4c4;
+  --line: #3a2f2a;
+  --accent: #f2a33a;
+  --accent-dark: #c47a17;
+  --good: #4fa862;
+  --good-dark: #357a45;
+  --bad: #d65a4f;
+  --bad-dark: #9c3a31;
+  --sky: #8fd3f4;
+  --pixel: "Galmuri11", "Galmuri9", "DungGeunMo", ui-monospace, monospace;
+  --body: "Galmuri11", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+html.auth-pending body { visibility: hidden; }
+
+body {
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px) 0 0 / 16px 16px,
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px) 0 0 / 16px 16px,
+    var(--bg);
+  color: var(--paper);
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: none;
+}
+
+a { color: inherit; }
+button, input, textarea { font: inherit; }
+
+/* 픽셀 테두리 패널 */
+.panel {
+  background: var(--paper);
+  color: var(--ink);
+  border: 3px solid var(--line);
+  border-radius: 6px;
+  box-shadow: inset 0 -4px 0 var(--paper-2), 0 4px 0 rgba(0,0,0,.35);
+}
+
+/* 픽셀 버튼 */
+.btn {
+  --c: var(--accent); --cd: var(--accent-dark);
+  appearance: none;
+  border: 3px solid var(--line);
+  border-radius: 6px;
+  background: var(--c);
+  color: #fff;
+  padding: 8px 14px;
+  font-family: var(--pixel);
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: inset 0 -4px 0 var(--cd);
+  text-shadow: 1px 1px 0 rgba(0,0,0,.35);
+  transition: transform .06s;
+}
+.btn:hover { filter: brightness(1.06); }
+.btn:active { transform: translateY(2px); box-shadow: inset 0 -2px 0 var(--cd); }
+.btn:disabled { filter: grayscale(.8) brightness(.9); cursor: not-allowed; transform: none; }
+.btn.good { --c: var(--good); --cd: var(--good-dark); }
+.btn.bad { --c: var(--bad); --cd: var(--bad-dark); }
+.btn.ghost { --c: #e9dcc0; --cd: #cdbb95; color: var(--ink); text-shadow: none; }
+.btn.small { padding: 4px 10px; font-size: 13px; }
+
+.pixel { font-family: var(--pixel); }
+
+/* 상단 바 */
+.topbar {
+  display: flex; align-items: center; gap: 16px;
+  padding: 10px 20px;
+  background: var(--bg-2);
+  border-bottom: 3px solid #0f1020;
+  position: sticky; top: 0; z-index: 10;
+}
+.brand { font-family: var(--pixel); font-size: 18px; text-decoration: none; display: flex; align-items: center; gap: 8px; }
+.brand .logo { width: 22px; height: 22px; image-rendering: pixelated; }
+.topbar nav { display: flex; gap: 6px; flex-wrap: wrap; }
+.topbar nav a {
+  text-decoration: none; padding: 4px 10px; border-radius: 4px;
+  font-family: var(--pixel); font-size: 14px; color: #cfd2ea;
+}
+.topbar nav a[aria-current="page"], .topbar nav a:hover { background: rgba(255,255,255,.08); color: #fff; }
+.topbar .spacer { flex: 1; }
+.topbar .clock { font-family: var(--pixel); color: #cfd2ea; font-size: 14px; }
+
+@media (max-width: 640px) {
+  .topbar { padding: 8px 12px; gap: 10px; flex-wrap: wrap; }
+  .topbar .clock { display: none; }
+}

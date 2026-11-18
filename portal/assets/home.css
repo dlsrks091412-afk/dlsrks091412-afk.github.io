@@ -1,0 +1,24 @@
+.home { max-width: 960px; margin: 0 auto; padding: 32px 16px 48px; }
+.hello h1 { font-size: 26px; margin: 4px 0 6px; }
+.hello p { margin: 0; color: #cfd2ea; }
+.hello .eyebrow { color: var(--accent); font-size: 13px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 28px; }
+.tile { display: grid; grid-template-columns: 56px 1fr; gap: 14px; align-items: center; padding: 18px; text-decoration: none; position: relative; min-height: 110px; }
+.tile.live { transition: transform .12s; }
+.tile.live:hover { transform: translateY(-3px); }
+.tile.soon { opacity: .6; }
+.tile-body { display: grid; gap: 4px; font-size: 14px; color: var(--ink-soft); }
+.tile-body strong { color: var(--ink); font-size: 17px; font-weight: normal; padding-right: 58px; }
+.tag { position: absolute; top: 10px; right: 12px; font-family: var(--pixel); font-size: 11px; padding: 1px 6px; border-radius: 3px; background: var(--paper-2); color: var(--ink-soft); }
+.tile.live .tag { background: var(--good); color: #fff; }
+.tile-icon { width: 56px; height: 56px; border: 3px solid var(--line); border-radius: 6px; background: var(--paper-2); position: relative; }
+.tile-icon::before, .tile-icon::after { content: ""; position: absolute; }
+.tile-icon.office { background: #c08a5a; }
+.tile-icon.office::before { left: 8px; top: 10px; width: 28px; height: 14px; background: #f1e6cf; box-shadow: 0 6px 0 #a77b52; }
+.tile-icon.office::after { left: 32px; top: 22px; width: 10px; height: 18px; background: #4fa862; box-shadow: 0 -8px 0 -1px #f3c9a0; }
+.tile-icon.note::before { left: 12px; top: 8px; width: 26px; height: 34px; background: #fffdf6; border: 2px solid var(--line); }
+.tile-icon.note::after { left: 18px; top: 16px; width: 16px; height: 2px; background: var(--ink-soft); box-shadow: 0 6px 0 var(--ink-soft), 0 12px 0 var(--ink-soft); }
+.tile-icon.folder::before { left: 8px; top: 14px; width: 36px; height: 26px; background: #e9c46a; border: 2px solid #b8892e; }
+.tile-icon.folder::after { left: 8px; top: 9px; width: 16px; height: 6px; background: #e9c46a; border: 2px solid #b8892e; border-bottom: 0; }
+.tile-icon.link::before { left: 10px; top: 18px; width: 20px; height: 12px; border: 4px solid #3b6cff; border-radius: 8px; }
+.tile-icon.link::after { left: 22px; top: 18px; width: 20px; height: 12px; border: 4px solid #3b6cff; border-radius: 8px; }

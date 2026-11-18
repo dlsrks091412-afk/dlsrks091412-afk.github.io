@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko" class="auth-pending">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://cdn.jsdelivr.net; font-src https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self'; base-uri 'none'; object-src 'none'">
+<title>홈 · My Portal</title>
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri@2.40.3/dist/galmuri.css">
+<link rel="stylesheet" href="assets/portal.css">
+<link rel="stylesheet" href="assets/home.css">
+<script src="assets/auth-config.js"></script>
+<script src="assets/auth.js"></script>
+<script src="assets/guard.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="home.html"><img class="logo" src="assets/logo.svg" alt=""> My Portal</a>
+    <nav>
+      <a href="home.html" aria-current="page">홈</a>
+      <a href="office.html">AI 사무실</a>
+    </nav>
+    <span class="spacer"></span>
+    <span class="clock" data-clock></span>
+    <button class="btn ghost small" data-logout type="button">로그아웃</button>
+  </header>
+
+  <main class="home">
+    <section class="hello">
+      <p class="pixel eyebrow">WELCOME BACK</p>
+      <h1 class="pixel">오늘도 좋은 하루예요, 대표님.</h1>
+      <p>연결된 공간들로 바로 이동할 수 있어요.</p>
+    </section>
+
+    <section class="tiles">
+      <a class="panel tile live" href="office.html">
+        <span class="tile-icon office" aria-hidden="true"></span>
+        <span class="tile-body">
+          <strong class="pixel">AI 에이전트 사무실</strong>
+          <span>에이전트들이 지금 무슨 일을 하는지 보고, 결재를 처리해요.</span>
+        </span>
+        <span class="tag">운영 중</span>
+      </a>
+      <div class="panel tile soon">
+        <span class="tile-icon note" aria-hidden="true"></span>
+        <span class="tile-body">
+          <strong class="pixel">블로그 · 기록</strong>
+          <span>글과 메모를 모아 둘 공간</span>
+        </span>
+        <span class="tag">준비 중</span>
+      </div>
+      <div class="panel tile soon">
+        <span class="tile-icon folder" aria-hidden="true"></span>
+        <span class="tile-body">
+          <strong class="pixel">프로젝트</strong>
+          <span>진행 중인 작업과 결과물</span>
+        </span>
+        <span class="tag">준비 중</span>
+      </div>
+      <div class="panel tile soon">
+        <span class="tile-icon link" aria-hidden="true"></span>
+        <span class="tile-body">
+          <strong class="pixel">바로가기</strong>
+          <span>자주 쓰는 서비스 링크 모음</span>
+        </span>
+        <span class="tag">준비 중</span>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
